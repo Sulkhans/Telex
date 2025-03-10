@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans", "sans-serif";
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  button,
+  input {
+    outline: none;
+  }
+}
