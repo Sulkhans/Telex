@@ -6,3 +6,114 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String      @id @default(cuid())
+  username  String      @unique
+  email     String      @unique
+  password  String
+  fullName  String
+  gender    Boolean
+  image     String
+  status    Status      @default(offline)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  sentFriendRequests     Friendship[]    @relation("Sender")
+  receivedFriendRequests Friendship[]    @relation("Receiver")
+  sentDirectMessages     DirectMessage[] @relation("MessageSender")
+  createdChannels        Channel[]       @relation("ChannelCreator")
+  channelMemberships     ChannelMember[]
+  channelMessages        ChannelMessage[]
+}
+
+enum Status {
+  online
+  offline
+  away
+}
+
+model Friendship {
+  id          String            @id @default(cuid())
+  senderId    String
+  receiverId  String
+  status      FriendshipStatus  @default(pending)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  sender         User          @relation("Sender", fields: [senderId], references: [id])
+  receiver       User          @relation("Receiver", fields: [receiverId], references: [id])
+  directMessages DirectMessage[]
+
+  @@unique([senderId, receiverId])
+}
+
+enum FriendshipStatus {
+  pending
+  accepted
+  rejected
+}
+
+model DirectMessage {
+  id           String     @id @default(cuid())
+  friendshipId String
+  senderId     String
+  content      String
+  isRead       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  friendship   Friendship @relation(fields: [friendshipId], references: [id])
+  sender       User       @relation("MessageSender", fields: [senderId], references: [id])
+  attachments  Attachment[]    @relation("DMAttachments")
+}
+
+model Channel {
+  id          String          @id @default(cuid())
+  name        String
+  createdById String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  createdBy   User            @relation("ChannelCreator", fields: [createdById], references: [id])
+  members     ChannelMember[]
+  messages    ChannelMessage[]
+}
+
+model ChannelMember {
+  id        String  @id @default(cuid())
+  channelId String
+  userId    String
+  isAdmin   Boolean @default(false)
+
+  channel   Channel @relation(fields: [channelId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([channelId, userId])
+}
+
+model ChannelMessage {
+  id        String   @id @default(cuid())
+  channelId String
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  channel   Channel         @relation(fields: [channelId], references: [id])
+  sender    User            @relation(fields: [senderId], references: [id])
+  attachments Attachment[]  @relation("ChannelAttachments")
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  directMessageId   String?
+  channelMessageId  String?
+  url               String
+  fileType          String
+  fileSize          Int
+  createdAt         DateTime        @default(now())
+
+  directMessage     DirectMessage?  @relation("DMAttachments", fields: [directMessageId], references: [id])
+  channelMessage    ChannelMessage? @relation("ChannelAttachments", fields: [channelMessageId], references: [id])
+}
