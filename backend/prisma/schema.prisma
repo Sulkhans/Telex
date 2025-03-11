@@ -16,6 +16,8 @@ model User {
   gender    Boolean
   image     String
   status    Status      @default(offline)
+  verified  Boolean     @default(false)
+  token     String?     @unique
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
