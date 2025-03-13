@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import userRoutes from "./routes/userRoutes.js";
+import friendRoutes from "./routes/friendRoutes.js";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/friend", friendRoutes);
 
 app.listen(PORT, () => console.log(`Running on port: ${PORT}`));
