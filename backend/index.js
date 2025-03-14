@@ -6,6 +6,7 @@ import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import friendRoutes from "./routes/friendRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import channelRoutes from "./routes/channelRoutes.js";
 
 dotenv.config();
 
@@ -20,5 +21,6 @@ app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 app.use("/api/user", userRoutes);
 app.use("/api/friend", friendRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/channel", channelRoutes);
 
 app.listen(PORT, () => console.log(`Running on port: ${PORT}`));
