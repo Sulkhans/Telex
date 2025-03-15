@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.post("/signup", createUser);
-router.post("/verify", verifyEmail);
+router.put("/verify", verifyEmail);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 

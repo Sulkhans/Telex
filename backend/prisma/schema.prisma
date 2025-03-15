@@ -60,7 +60,6 @@ model DirectMessage {
 
   friendship   Friendship @relation(fields: [friendshipId], references: [id])
   sender       User       @relation("MessageSender", fields: [senderId], references: [id])
-  attachments  Attachment[]    @relation("DMAttachments")
 }
 
 model Channel {
@@ -108,18 +107,4 @@ model ChannelMessage {
 
   channel   Channel         @relation(fields: [channelId], references: [id])
   sender    User            @relation(fields: [senderId], references: [id])
-  attachments Attachment[]  @relation("ChannelAttachments")
-}
-
-model Attachment {
-  id        String   @id @default(cuid())
-  directMessageId   String?
-  channelMessageId  String?
-  url               String
-  fileType          String
-  fileSize          Int
-  createdAt         DateTime        @default(now())
-
-  directMessage     DirectMessage?  @relation("DMAttachments", fields: [directMessageId], references: [id])
-  channelMessage    ChannelMessage? @relation("ChannelAttachments", fields: [channelMessageId], references: [id])
 }
