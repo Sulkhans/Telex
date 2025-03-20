@@ -125,6 +125,15 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    const { id, username, fullName, image, status } = req.user;
+    res.status(200).json({ id, username, name: fullName, image, status });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const logoutUser = async (req, res) => {
   try {
     res.cookie("jwt", "", { httpOnly: false, expires: new Date(0) });
@@ -134,4 +143,4 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { createUser, verifyEmail, loginUser, logoutUser };
+export { createUser, verifyEmail, loginUser, getUser, logoutUser };
