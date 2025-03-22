@@ -1,8 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --font-sans: "Noto Sans", "sans-serif";
+  --font-sans: "Geist", "Segoe UI", "sans-serif";
+  --shadow-input: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --color-primary: oklch(0.141 0.005 285.823);
+  --color-secondary: oklch(0.552 0.016 285.938);
+  --color-foreground: oklch(0.985 0 0);
+  --color-light-background: oklch(0.967 0.001 286.375);
+  --color-light-card: oklch(100% 0 185);
+  --color-light-border: oklch(0.92 0.004 286.32);
+  --color-dark-background: oklch(0.145 0.005 285.823);
+  --color-dark-card: oklch(16.1% 0.005 285.823);
+  --color-dark-border: oklch(27.41% 0.0055 286.03);
 }
 
 @layer base {
@@ -10,8 +22,13 @@
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
   }
-  button,
+  body {
+    @apply bg-light-background text-primary dark:bg-dark-background dark:text-foreground transition-colors;
+  }
   input {
-    outline: none;
+    @apply text-primary dark:text-foreground outline-none;
+  }
+  button {
+    @apply outline-none cursor-pointer;
   }
 }
