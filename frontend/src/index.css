@@ -31,4 +31,35 @@
   button {
     @apply outline-none cursor-pointer;
   }
+
+  .circle1,
+  .circle2 {
+    @apply size-12 rounded-full bg-primary dark:bg-foreground opacity-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+    -webkit-animation: load 2s infinite ease-in-out;
+    animation: load 2s infinite ease-in-out;
+  }
+  .circle2 {
+    -webkit-animation-delay: -1s;
+    animation-delay: -1s;
+  }
+  @-webkit-keyframes load {
+    0%,
+    100% {
+      -webkit-transform: scale(0);
+    }
+    50% {
+      -webkit-transform: scale(1);
+    }
+  }
+  @keyframes load {
+    0%,
+    100% {
+      transform: scale(0);
+      -webkit-transform: scale(0);
+    }
+    50% {
+      transform: scale(1);
+      -webkit-transform: scale(1);
+    }
+  }
 }
