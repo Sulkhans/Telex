@@ -2,15 +2,12 @@ import { createContext, ReactNode, useContext, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUser, login as apiLogin, logout as apiLogout } from "../api/auth";
 import { ErrorType, LoginData, User } from "../types/types";
-
-const getCookie = (name: string) =>
-  document.cookie
-    .split(";")
-    .some((cookie) => cookie.trim().startsWith(`${name}=`));
+import { useNavigate } from "react-router-dom";
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
+  isInitialLoading: boolean;
   isError: boolean;
   error: ErrorType | null;
   login: (credentials: LoginData) => Promise<User>;
@@ -20,6 +17,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: false,
+  isInitialLoading: false,
   isError: false,
   error: null,
   login: async () => ({} as User),
@@ -30,23 +28,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<ErrorType | null>(null);
 
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: user,
-    isLoading,
+    isLoading: isInitialLoading,
     isError,
   } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    enabled: getCookie("jwt"),
     retry: false,
   });
 
   const loginMutation = useMutation({
-    mutationFn: (credentials: LoginData) => apiLogin(credentials),
+    mutationFn: (credentials: LoginData) => {
+      setError(null);
+      return apiLogin(credentials);
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);
       setError(null);
+      navigate("/chat");
     },
     onError: (err: ErrorType) => setError(err),
   });
@@ -56,23 +58,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     onSuccess: () => {
       queryClient.setQueryData(["user"], null);
       queryClient.invalidateQueries({ queryKey: ["user"] });
+      navigate("/");
     },
   });
 
-  const handleLogin = async (credentials: LoginData) =>
+  const login = async (credentials: LoginData) =>
     await loginMutation.mutateAsync(credentials);
 
-  const handleLogout = async () => await logoutMutation.mutateAsync();
+  const logout = async () => await logoutMutation.mutateAsync();
 
   return (
     <AuthContext.Provider
       value={{
         user: user ?? null,
-        isLoading,
+        isLoading: loginMutation.isPending,
+        isInitialLoading,
         isError,
         error,
-        login: handleLogin,
-        logout: handleLogout,
+        login,
+        logout,
       }}
     >
       {children}
