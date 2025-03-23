@@ -32,9 +32,23 @@
     @apply outline-none cursor-pointer;
   }
 
+  input[type="radio"] {
+    display: none;
+  }
+  input[type="radio"] + label {
+    @apply relative pl-7 text-sm cursor-pointer before:transition-colors after:transition-colors;
+  }
+
+  input[type="radio"] + label::before {
+    @apply content-[""] absolute left-0 top-1/2 -translate-y-1/2 size-5 rounded-full shadow border border-light-border;
+  }
+  input[type="radio"]:checked + label::after {
+    @apply content-[""] absolute left-1.25 top-1/2 -translate-y-1/2 size-2.5 rounded-full bg-primary;
+  }
+
   .circle1,
   .circle2 {
-    @apply size-12 rounded-full bg-primary dark:bg-foreground opacity-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+    @apply size-12 rounded-full bg-primary dark:bg-foreground opacity-80 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
     -webkit-animation: load 2s infinite ease-in-out;
     animation: load 2s infinite ease-in-out;
   }
