@@ -108,6 +108,8 @@ const loginUser = async (req, res) => {
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect)
       return res.status(401).json({ message: "Password is incorrect" });
+    if (!user.verified)
+      return res.status(401).json({ message: "Account is not verified" });
     await prisma.user.update({
       where: { username },
       data: { status: "online" },
