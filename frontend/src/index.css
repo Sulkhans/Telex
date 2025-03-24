@@ -33,12 +33,11 @@
   }
 
   input[type="radio"] {
-    display: none;
+    @apply hidden;
   }
   input[type="radio"] + label {
     @apply relative pl-7 text-sm cursor-pointer before:transition-colors after:transition-colors;
   }
-
   input[type="radio"] + label::before {
     @apply content-[""] absolute left-0 top-1/2 -translate-y-1/2 size-5 rounded-full shadow border border-light-border;
   }
@@ -46,34 +45,15 @@
     @apply content-[""] absolute left-1.25 top-1/2 -translate-y-1/2 size-2.5 rounded-full bg-primary;
   }
 
-  .circle1,
-  .circle2 {
-    @apply size-12 rounded-full bg-primary dark:bg-foreground opacity-80 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
-    -webkit-animation: load 2s infinite ease-in-out;
-    animation: load 2s infinite ease-in-out;
+  .loader {
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 rounded-full border-5 border-y-primary dark:border-y-foreground border-x-transparent animate-[rotation_2s_linear_infinite];
   }
-  .circle2 {
-    -webkit-animation-delay: -1s;
-    animation-delay: -1s;
-  }
-  @-webkit-keyframes load {
-    0%,
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
     100% {
-      -webkit-transform: scale(0);
-    }
-    50% {
-      -webkit-transform: scale(1);
-    }
-  }
-  @keyframes load {
-    0%,
-    100% {
-      transform: scale(0);
-      -webkit-transform: scale(0);
-    }
-    50% {
-      transform: scale(1);
-      -webkit-transform: scale(1);
+      transform: rotate(360deg);
     }
   }
 }

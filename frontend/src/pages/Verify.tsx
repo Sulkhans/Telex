@@ -44,9 +44,7 @@ const Verify = () => {
       </button>
     </div>
   ) : (
-    <div className="relative h-36">
-      <Loader />
-    </div>
+    <Loader />
   );
 };
 

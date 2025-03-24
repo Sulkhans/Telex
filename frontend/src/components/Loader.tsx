@@ -1,8 +1,7 @@
 const Loader = () => {
   return (
-    <div>
-      <div className="circle1" />
-      <div className="circle2" />
+    <div className="relative min-h-24">
+      <span className="loader" />
     </div>
   );
 };

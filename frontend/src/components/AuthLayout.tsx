@@ -18,7 +18,7 @@ const AuthLayout = () => {
           <Moon className="stroke-primary" />
         )}
       </button>
-      <div className=" space-y-6 mx-6 py-6 sm:my-0">
+      <div className="space-y-6 mx-6 py-6 sm:my-0">
         <div className="w-fit mx-auto">
           <Telex />
         </div>
