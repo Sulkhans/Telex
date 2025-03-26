@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoginData, SignupData, User } from "../types/types";
+import { LoginData, SignupData, Status, User } from "../types/types";
 
 const api = axios.create({
   baseURL: "http://localhost:5000/api/user",
@@ -34,6 +34,10 @@ export const login = async (credentials: LoginData): Promise<User> => {
 export const getUser = async (): Promise<User> => {
   const res = await api.get("/");
   return res.data;
+};
+
+export const updateStatus = async (status: Status) => {
+  await api.put("/status", { status });
 };
 
 export const logout = async () => {

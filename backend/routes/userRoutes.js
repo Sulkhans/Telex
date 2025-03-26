@@ -5,6 +5,7 @@ import {
   verifyEmail,
   loginUser,
   getUser,
+  updateStatus,
   logoutUser,
 } from "../controllers/userController.js";
 
@@ -14,6 +15,7 @@ router.post("/signup", createUser);
 router.put("/verify", verifyEmail);
 router.post("/login", loginUser);
 router.get("/", validateToken, getUser);
+router.put("/status", validateToken, updateStatus);
 router.post("/logout", logoutUser);
 
 export default router;

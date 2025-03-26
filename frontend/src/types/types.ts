@@ -2,12 +2,14 @@ export type ErrorType = {
   message: string;
 };
 
+export type Status = "online" | "away" | "offline";
+
 export type User = {
   id: string;
   username: string;
   name: string;
   image: string;
-  status: "onlline" | "away" | "offline";
+  status: Status;
 };
 
 export type LoginData = {

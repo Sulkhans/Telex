@@ -136,6 +136,19 @@ const getUser = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { status: status },
+    });
+    res.json({ message: `User status updated to ${status}` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const logoutUser = async (req, res) => {
   try {
     res.cookie("jwt", "", { httpOnly: false, expires: new Date(0) });
@@ -145,4 +158,11 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { createUser, verifyEmail, loginUser, getUser, logoutUser };
+export {
+  createUser,
+  verifyEmail,
+  loginUser,
+  getUser,
+  updateStatus,
+  logoutUser,
+};
