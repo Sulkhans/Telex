@@ -25,8 +25,8 @@ const User = () => {
       className="h-fit p-4 py-3 flex items-center gap-4 select-none relative rounded-xl border border-light-border dark:border-dark-border bg-light-card dark:bg-dark-card shadow transition-all"
     >
       <UserIcon image={user!.image} status={user!.status} />
-      <div className="text-sm *:leading-4.5 max-w-30 text-nowrap *:overflow-ellipsis *:overflow-hidden ">
-        <h1 className="font-semibold">{user!.name}</h1>
+      <div className="text-sm *:leading-4.5 max-w-30 text-nowrap *:overflow-ellipsis *:overflow-hidden">
+        <h1 className="font-semibold">{user!.fullName}</h1>
         <p className="font-medium text-secondary">{user!.username}</p>
       </div>
       <button
@@ -37,7 +37,7 @@ const User = () => {
       >
         <Options className="mx-auto size-5 stroke-primary dark:stroke-foreground transition-colors" />
       </button>
-      {menuVisible && <UserMenu />}
+      <UserMenu menuVisible={menuVisible} />
     </div>
   );
 };

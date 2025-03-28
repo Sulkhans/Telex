@@ -7,7 +7,7 @@ export type Status = "online" | "away" | "offline";
 export type User = {
   id: string;
   username: string;
-  name: string;
+  fullName: string;
   image: string;
   status: Status;
 };
@@ -26,3 +26,7 @@ export type SignupData = {
   confirmPassword: string;
   gender: boolean;
 };
+
+export type Friend = {
+  friendshipId: string;
+} & User;

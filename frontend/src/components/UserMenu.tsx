@@ -4,19 +4,27 @@ import useTheme from "../hooks/useTheme";
 import Chevron from "../assets/chevron.svg?react";
 import { Status } from "../types/types";
 
+type Props = {
+  menuVisible: boolean;
+};
+
 const statusButtons: { status: Status; color: String }[] = [
   { status: "online", color: "bg-green-600" },
   { status: "away", color: "bg-amber-500" },
   { status: "offline", color: "bg-secondary" },
 ];
 
-const UserMenu = () => {
+const UserMenu = ({ menuVisible }: Props) => {
   const { logout, updateStatus } = useAuth();
   const { isDark, setIsDark } = useTheme();
   const [statusVisible, setStatusVisible] = useState(false);
 
   return (
-    <div className="absolute left-45 bottom-16 flex items-start gap-1">
+    <div
+      className={`${
+        !menuVisible && "opacity-0 pointer-events-none"
+      } absolute left-45 bottom-16 flex items-start gap-1`}
+    >
       <div className="relative w-40 flex flex-col p-1 text-sm rounded-md bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border shadow-md transition-colors">
         <button
           onClick={() => setStatusVisible(!statusVisible)}

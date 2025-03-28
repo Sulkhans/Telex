@@ -60,18 +60,35 @@ const getFriendsList = async (req, res) => {
       },
       include: {
         sender: {
-          select: { id: true, fullName: true, username: true, image: true },
+          select: {
+            id: true,
+            fullName: true,
+            username: true,
+            image: true,
+            status: true,
+          },
         },
         receiver: {
-          select: { id: true, fullName: true, username: true, image: true },
+          select: {
+            id: true,
+            fullName: true,
+            username: true,
+            image: true,
+            status: true,
+          },
         },
       },
     });
-    const friends = friendships.map((friendship) =>
-      friendship.senderId === req.user.id
-        ? friendship.receiver
-        : friendship.sender
-    );
+    const friends = friendships.map((friendship) => {
+      const friend =
+        friendship.senderId === req.user.id
+          ? friendship.receiver
+          : friendship.sender;
+      return {
+        friendshipId: friendship.id,
+        ...friend,
+      };
+    });
     res.status(200).json({ friends });
   } catch (error) {
     res.status(500).json({ message: error.message });
