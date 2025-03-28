@@ -1,0 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link, useParams } from "react-router-dom";
+import { getFriendsList } from "../api/friends";
+import UserIcon from "./UserIcon";
+import Skeleton from "./Skeleton";
+
+const Friends = () => {
+  const { id } = useParams();
+  const { data, isLoading } = useQuery({
+    queryKey: ["friend"],
+    queryFn: getFriendsList,
+  });
+  return (
+    <div className="overflow-y-auto space-y-1">
+      {data
+        ? data.friends.map((user) => (
+            <Link
+              key={user.friendshipId}
+              to={"/chat/" + user.friendshipId}
+              className={`${
+                user.friendshipId === id &&
+                "bg-dark-background/5 dark:bg-light-background/5"
+              } h-fit p-2 flex items-center gap-4 select-none relative rounded-lg hover:bg-dark-background/5 dark:hover:bg-light-background/5 transition-all cursor-pointer`}
+            >
+              <UserIcon image={user.image} status={user.status} />
+              <div className="text-sm *:leading-4.5 max-w-30 text-nowrap *:overflow-ellipsis *:overflow-hidden">
+                <h1 className="font-semibold">{user.fullName}</h1>
+                <p className="font-medium text-secondary">{user.username}</p>
+              </div>
+            </Link>
+          ))
+        : isLoading && <Skeleton quantity={6} />}
+    </div>
+  );
+};
+
+export default Friends;
