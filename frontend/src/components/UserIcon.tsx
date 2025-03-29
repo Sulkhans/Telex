@@ -20,7 +20,7 @@ const UserIcon = ({ image, status }: Props) => {
         className="size-12 min-w-12 rounded-full peer"
       />
       <span
-        className={`${colors[status]} content-[''] size-4 absolute rounded-full bottom-0 right-0 border-2 border-light-card transition-colors`}
+        className={`${colors[status]} content-[''] size-4 absolute rounded-full bottom-0 right-0 border-2 border-light-card dark:border-dark-card transition-colors`}
       />
     </div>
   );

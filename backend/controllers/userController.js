@@ -118,7 +118,7 @@ const loginUser = async (req, res) => {
     res.status(200).json({
       id: user.id,
       username: user.username,
-      name: user.fullName,
+      fullName: user.fullName,
       image: user.image,
       status: "online",
     });

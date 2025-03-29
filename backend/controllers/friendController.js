@@ -77,17 +77,46 @@ const getFriendsList = async (req, res) => {
             status: true,
           },
         },
+        directMessages: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+        },
       },
     });
-    const friends = friendships.map((friendship) => {
+
+    const unreadCounts = await Promise.all(
+      friendships.map((friendship) => {
+        return prisma.directMessage.count({
+          where: {
+            friendshipId: friendship.id,
+            senderId: { not: req.user.id },
+            read: false,
+          },
+        });
+      })
+    );
+
+    const friends = friendships.map((friendship, i) => {
       const friend =
         friendship.senderId === req.user.id
           ? friendship.receiver
           : friendship.sender;
+      const lastMessage = friendship.directMessages[0] || null;
+      const lastMessageTime = lastMessage ? lastMessage.createdAt : null;
       return {
-        friendshipId: friendship.id,
         ...friend,
+        friendshipId: friendship.id,
+        lastMessageTime,
+        unreadMessageCount: unreadCounts[i],
       };
+    });
+
+    friends.sort((a, b) => {
+      if (!a.lastMessageTime) return 1;
+      if (!b.lastMessageTime) return -1;
+      return b.lastMessageTime.getTime() - a.lastMessageTime.getTime();
     });
     res.status(200).json({ friends });
   } catch (error) {

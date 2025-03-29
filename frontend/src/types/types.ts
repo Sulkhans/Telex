@@ -29,4 +29,6 @@ export type SignupData = {
 
 export type Friend = {
   friendshipId: string;
+  lastMessageTime: Date | null;
+  unreadMessageCount: number;
 } & User;

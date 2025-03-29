@@ -9,7 +9,9 @@ const Friends = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["friend"],
     queryFn: getFriendsList,
+    refetchOnWindowFocus: false,
   });
+
   return (
     <div className="overflow-y-auto space-y-1">
       {data
@@ -27,6 +29,11 @@ const Friends = () => {
                 <h1 className="font-semibold">{user.fullName}</h1>
                 <p className="font-medium text-secondary">{user.username}</p>
               </div>
+              {user.unreadMessageCount > 0 && (
+                <span className="w-9 py-0.25 ml-auto rounded-full bg-green-600 dark:bg-green-700 text-center text-sm font-medium text-foreground overflow-hidden">
+                  {user.unreadMessageCount}
+                </span>
+              )}
             </Link>
           ))
         : isLoading && <Skeleton quantity={6} />}
