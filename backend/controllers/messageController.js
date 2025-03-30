@@ -16,7 +16,7 @@ const sendMessage = async (req, res) => {
 
 const getMessages = async (req, res) => {
   try {
-    const { friendshipId, cursor } = req.body;
+    const { friendshipId, cursor } = req.query;
     if (!friendshipId) return res.status(400).json({ message: "Bad request" });
     const messages = await prisma.directMessage.findMany({
       where: { friendshipId },
@@ -42,7 +42,7 @@ const getMessages = async (req, res) => {
         read: true,
       },
     });
-    res.status(200).json(messages);
+    res.status(200).json({ messages });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

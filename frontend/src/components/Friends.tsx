@@ -3,14 +3,25 @@ import { Link, useParams } from "react-router-dom";
 import { getFriendsList } from "../api/friends";
 import UserIcon from "./UserIcon";
 import Skeleton from "./Skeleton";
+import { useChat } from "../context/ChatContext";
+import { useEffect } from "react";
 
 const Friends = () => {
   const { id } = useParams();
+  const { setSelected } = useChat();
+
   const { data, isLoading } = useQuery({
     queryKey: ["friend"],
     queryFn: getFriendsList,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (id) {
+      const target = data?.friends.find((user) => user.friendshipId === id);
+      if (target) setSelected({ type: "friend", data: target });
+    }
+  }, [id, data, setSelected]);
 
   return (
     <div className="overflow-y-auto space-y-1">

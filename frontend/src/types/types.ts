@@ -32,3 +32,12 @@ export type Friend = {
   lastMessageTime: Date | null;
   unreadMessageCount: number;
 } & User;
+
+export type Message = {
+  id: string;
+  content: string;
+  senderId: string;
+  read: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
