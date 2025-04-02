@@ -31,6 +31,9 @@
   button {
     @apply outline-none cursor-pointer;
   }
+  textarea::-webkit-scrollbar {
+    width: 0;
+  }
 
   input[type="radio"] {
     @apply hidden;
