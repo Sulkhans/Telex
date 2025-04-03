@@ -28,3 +28,14 @@ export const getMessages = async ({
   const res = await api.get("/", { params: { friendshipId, cursor } });
   return res.data;
 };
+
+export const sendMessage = async ({
+  friendshipId,
+  content,
+}: {
+  friendshipId: string;
+  content: string;
+}): Promise<Message> => {
+  const res = await api.post("/", { friendshipId, content });
+  return res.data;
+};

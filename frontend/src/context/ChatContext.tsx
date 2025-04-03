@@ -1,7 +1,12 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Friend, Message } from "../types/types";
-import { getMessages } from "../api/messages";
+import { getMessages, sendMessage as apiSendMessage } from "../api/messages";
+import { useAuth } from "./AuthContext";
 
 type Selected = { type: "friend"; data: Friend } | null;
 
@@ -14,6 +19,7 @@ type ChatContextType = {
   fetchNextPage: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
+  sendMessage: (content: string) => void;
 };
 
 const ChatContext = createContext<ChatContextType>({
@@ -25,10 +31,13 @@ const ChatContext = createContext<ChatContextType>({
   fetchNextPage: () => {},
   hasNextPage: false,
   isFetchingNextPage: false,
+  sendMessage: () => {},
 });
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [selected, setSelected] = useState<Selected | null>(null);
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const {
     data,
@@ -59,6 +68,65 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   const messages = data?.pages.flatMap((page) => page.messages) || [];
 
+  const sendMessageMutation = useMutation({
+    mutationFn: ({
+      friendshipId,
+      content,
+    }: {
+      friendshipId: string;
+      content: string;
+    }) => apiSendMessage({ friendshipId, content }),
+
+    onMutate: async ({ content }) => {
+      await queryClient.cancelQueries({
+        queryKey: ["messages", "friend", selected!.data.friendshipId],
+      });
+      const previousMessages = queryClient.getQueryData([
+        "messages",
+        "friend",
+        selected!.data.friendshipId,
+      ]);
+      const optimisticMessage: Message = {
+        id: "temp" + Date.now(),
+        content,
+        senderId: user!.id,
+        read: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      queryClient.setQueryData(
+        ["messages", "friend", selected!.data.friendshipId],
+        (prev: any) => {
+          const newPages = [...prev.pages];
+          newPages[0] = {
+            ...newPages[0],
+            messages: [optimisticMessage, ...newPages[0].messages],
+          };
+          return { ...prev, pages: newPages };
+        }
+      );
+      return { previousMessages };
+    },
+    onError: (_err, _newMessage, context) => {
+      queryClient.setQueryData(
+        ["messages", "friend", selected!.data.friendshipId],
+        context?.previousMessages
+      );
+    },
+    onSuccess: (_res) => {
+      queryClient.invalidateQueries({
+        queryKey: ["messages", "friend", selected!.data.friendshipId],
+      });
+    },
+  });
+
+  const sendMessage = (content: string) => {
+    sendMessageMutation.mutate({
+      friendshipId: selected!.data.friendshipId,
+      content: content.trim(),
+    });
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -70,6 +138,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
+        sendMessage,
       }}
     >
       {children}
