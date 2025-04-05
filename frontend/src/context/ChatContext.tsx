@@ -20,6 +20,7 @@ type ChatContextType = {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   sendMessage: (content: string) => void;
+  isSending: boolean;
 };
 
 const ChatContext = createContext<ChatContextType>({
@@ -32,6 +33,7 @@ const ChatContext = createContext<ChatContextType>({
   hasNextPage: false,
   isFetchingNextPage: false,
   sendMessage: () => {},
+  isSending: false,
 });
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
@@ -139,6 +141,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         hasNextPage,
         isFetchingNextPage,
         sendMessage,
+        isSending: sendMessageMutation.isPending,
       }}
     >
       {children}

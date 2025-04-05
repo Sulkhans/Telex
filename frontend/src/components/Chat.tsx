@@ -13,6 +13,7 @@ const Chat = () => {
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
+    isSending,
   } = useChat();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -57,38 +58,77 @@ const Chat = () => {
         </header>
         <main
           ref={ref}
-          className="h-full relative flex flex-col-reverse px-4 pt-4 content-end overflow-y-auto text-center border-y border-light-border dark:border-dark-border transition-colors"
+          className="h-full relative flex flex-col-reverse px-4 pt-4 content-end border-y border-light-border dark:border-dark-border overflow-y-scroll scroll transition-colors"
         >
           {isLoading ? (
             <ChatSkeleton />
-          ) : messages && messages.length > 0 ? (
-            messages.map((message, i) => (
-              <div
-                key={message.id}
-                className={
-                  i > 0 && messages[i - 1].senderId === message.senderId
-                    ? "mb-0.5"
-                    : "mb-4"
-                }
-              >
-                <div className="flex items-end">
-                  {message.senderId === selected.data.id && (
-                    <UserIcon image={selected.data.image} compact />
-                  )}
+          ) : messages?.length ? (
+            <>
+              <span className="ml-auto mr-2 mb-2 -mt-3 text-xs text-secondary/75 font-medium">
+                {isSending
+                  ? "Sending"
+                  : messages[0].senderId !== selected.data.id
+                  ? messages[0].read
+                    ? "Seen"
+                    : "Sent"
+                  : null}
+              </span>
+              {messages.map((message, i) => {
+                const isFriend = message.senderId === selected.data.id;
+                const isSameSender =
+                  i > 0 && messages[i - 1].senderId === message.senderId;
+                const isNextSameSender =
+                  i < messages.length - 1 &&
+                  messages[i + 1].senderId === message.senderId;
+                const showUserIcon = isFriend && (i === 0 || !isSameSender);
+
+                const getCorner = () => {
+                  if (isFriend) {
+                    if (!isSameSender && !isNextSameSender)
+                      return "rounded-[1.25rem]";
+                    if (!isSameSender)
+                      return "rounded-b-[1.25rem] rounded-tr-[1.25rem] rounded-tl-md";
+                    if (!isNextSameSender)
+                      return "rounded-t-[1.25rem] rounded-br-[1.25rem] rounded-bl-md";
+                    return "rounded-r-[1.25rem] rounded-l-md";
+                  } else {
+                    if (!isSameSender && !isNextSameSender)
+                      return "rounded-[1.25rem]";
+                    if (!isSameSender)
+                      return "rounded-b-[1.25rem] rounded-tl-[1.25rem] rounded-tr-md";
+                    if (!isNextSameSender)
+                      return "rounded-t-[1.25rem] rounded-bl-[1.25rem] rounded-br-md";
+                    return "rounded-l-[1.25rem] rounded-r-md";
+                  }
+                };
+
+                return (
                   <div
-                    className={`${
-                      message.senderId !== selected.data.id
-                        ? "ml-auto bg-indigo-600 dark:bg-purple-900 text-foreground"
-                        : "ml-4 bg-light-background dark:bg-dark-background border border-transparent dark:border-dark-border"
-                    } px-3 py-2 text-[15px] rounded-[1.25rem] min-w-9 max-w-2xs min-[880px]:max-w-sm xl:max-w-2xl break-words`}
+                    key={message.id}
+                    className={isSameSender ? "mb-0.5" : "mb-4"}
                   >
-                    {message.content}
+                    <div className="flex items-end">
+                      {showUserIcon ? (
+                        <UserIcon image={selected.data.image} compact />
+                      ) : (
+                        isFriend && <div className="size-10" />
+                      )}
+                      <div
+                        className={`${
+                          isFriend
+                            ? "ml-4 bg-light-background dark:bg-dark-background border border-transparent dark:border-dark-border"
+                            : "ml-auto bg-indigo-600 dark:bg-purple-900 text-foreground"
+                        } ${getCorner()} px-3 py-2 text-[15px] min-w-9 max-w-2xs min-[880px]:max-w-sm xl:max-w-2xl break-words`}
+                      >
+                        {message.content}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))
+                );
+              })}
+            </>
           ) : (
-            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm text-secondary/75">
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm text-secondary/75 font-medium">
               No messages yet
             </span>
           )}

@@ -48,6 +48,23 @@
     @apply content-[""] absolute left-1.25 top-1/2 -translate-y-1/2 size-2.5 rounded-full bg-primary;
   }
 
+  .scroll::-webkit-scrollbar {
+    @apply size-2;
+  }
+  .scroll::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-secondary/25;
+  }
+  .scroll::-webkit-scrollbar-thumb:hover {
+    @apply bg-secondary/50;
+  }
+  .scroll::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .scroll::-webkit-scrollbar-button,
+  .scroll::-webkit-scrollbar-corner {
+    @apply w-0;
+  }
+
   .loader {
     @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 rounded-full border-5 border-y-primary dark:border-y-foreground border-x-transparent animate-[rotation_2s_linear_infinite];
   }
