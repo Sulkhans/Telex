@@ -16,16 +16,22 @@ const sendMessage = async (req, res) => {
 
 const getMessages = async (req, res) => {
   try {
-    const { channelId, cursor } = req.body;
+    const { channelId, cursor } = req.query;
     if (!channelId) return res.status(400).json({ message: "Bad request" });
     const messages = await prisma.channelMessage.findMany({
       where: { channelId },
-      select: { id: true, senderId: true, content: true, updatedAt: true },
+      select: {
+        id: true,
+        senderId: true,
+        content: true,
+        updatedAt: true,
+        sender: { select: { fullName: true, image: true } },
+      },
       orderBy: { createdAt: "desc" },
       take: 15,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
     });
-    res.status(200).json(messages);
+    res.status(200).json({ messages });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

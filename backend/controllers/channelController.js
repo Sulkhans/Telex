@@ -22,12 +22,33 @@ const getChannels = async (req, res) => {
   try {
     const memberships = await prisma.channelMember.findMany({
       where: { userId: req.user.id },
-      include: { channel: { select: { id: true, name: true } } },
+      include: {
+        channel: {
+          select: {
+            id: true,
+            name: true,
+            messages: {
+              orderBy: { createdAt: "asc" },
+              take: 1,
+              select: { createdAt: true },
+            },
+            _count: {
+              select: { members: true },
+            },
+          },
+        },
+      },
     });
-    const channels = memberships.map((each) => ({
-      ...each.channel,
-      isAdmin: each.isAdmin,
-    }));
+    const channels = memberships
+      .map((each) => ({
+        id: each.channel.id,
+        name: each.channel.name,
+        memberCount: each.channel._count.members,
+        isAdmin: each.isAdmin,
+        lastMessageTime:
+          each.channel.messages[0]?.createdAt || each.channel.createdAt,
+      }))
+      .sort((a, b) => b.lastMessageTime - a.lastMessageTime);
     res.status(200).json({ channels });
   } catch (error) {
     res.status(500).json({ message: error.message });
