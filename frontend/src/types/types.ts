@@ -41,3 +41,23 @@ export type Message = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type Channel = {
+  id: string;
+  name: string;
+  memberCount: number;
+  isAdmin: boolean;
+  lastMessageTime: Date | null;
+};
+
+export type ChannelMessage = {
+  id: string;
+  content: string;
+  channelId: string;
+  senderId: string;
+  updatedAt: Date;
+  sender: {
+    fullName: string;
+    image: string;
+  };
+};

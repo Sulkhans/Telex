@@ -1,6 +1,7 @@
+import { useState } from "react";
 import User from "./User";
 import Friends from "./Friends";
-import { useState } from "react";
+import Channels from "./Channels";
 
 const Sidebar = () => {
   const [toggle, setToggle] = useState(
@@ -29,7 +30,7 @@ const Sidebar = () => {
             />
           </div>
         </div>
-        <Friends />
+        {toggle ? <Friends /> : <Channels />}
       </div>
       <User />
     </aside>

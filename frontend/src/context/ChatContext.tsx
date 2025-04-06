@@ -4,16 +4,22 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Friend, Message } from "../types/types";
+import { Channel, ChannelMessage, Friend, Message } from "../types/types";
 import { getMessages, sendMessage as apiSendMessage } from "../api/messages";
+import { getChannelMessages } from "../api/channelMessages";
 import { useAuth } from "./AuthContext";
 
-type Selected = { type: "friend"; data: Friend } | null;
+type Selected =
+  | { type: "friend"; data: Friend }
+  | { type: "channel"; data: Channel }
+  | null;
+
+type QueryResult = { messages: Message[] } | { messages: ChannelMessage[] };
 
 type ChatContextType = {
   selected: Selected | null;
   setSelected: React.Dispatch<React.SetStateAction<Selected | null>>;
-  messages: Message[] | null;
+  messages: Message[] | ChannelMessage[] | null;
   isLoading: boolean;
   isError: boolean;
   fetchNextPage: () => void;
@@ -50,14 +56,25 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: selected
-      ? ["messages", "friend", selected.data.friendshipId]
+      ? selected.type === "friend"
+        ? ["messages", "friend", selected.data.friendshipId]
+        : ["messages", "channel", selected.data!.id]
       : ["messages", "none"],
-    queryFn: ({ pageParam }) => {
+    queryFn: ({ pageParam }): Promise<QueryResult> => {
       if (!selected) return Promise.resolve({ messages: [] });
-      return getMessages({
-        friendshipId: selected.data.friendshipId,
-        cursor: pageParam,
-      });
+      if (selected.type === "friend") {
+        return getMessages({
+          friendshipId: selected.data.friendshipId,
+          cursor: pageParam,
+        });
+      }
+      if (selected.type === "channel") {
+        return getChannelMessages({
+          channelId: selected.data.id,
+          cursor: pageParam,
+        });
+      }
+      return Promise.resolve({ messages: [] });
     },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (data) => {
@@ -68,7 +85,18 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     staleTime: 60000,
   });
 
-  const messages = data?.pages.flatMap((page) => page.messages) || [];
+  let messages: Message[] | ChannelMessage[] = [];
+  if (data?.pages) {
+    if (selected?.type === "friend") {
+      messages = data.pages.flatMap(
+        (page) => (page.messages || []) as Message[]
+      );
+    } else if (selected?.type === "channel") {
+      messages = data.pages.flatMap(
+        (page) => (page.messages || []) as ChannelMessage[]
+      );
+    }
+  }
 
   const sendMessageMutation = useMutation({
     mutationFn: ({
@@ -80,6 +108,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }) => apiSendMessage({ friendshipId, content }),
 
     onMutate: async ({ content }) => {
+      if (selected?.type !== "friend") return;
       await queryClient.cancelQueries({
         queryKey: ["messages", "friend", selected!.data.friendshipId],
       });
@@ -123,10 +152,12 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const sendMessage = (content: string) => {
-    sendMessageMutation.mutate({
-      friendshipId: selected!.data.friendshipId,
-      content: content.trim(),
-    });
+    if (selected!.type === "friend") {
+      sendMessageMutation.mutate({
+        friendshipId: selected!.data.friendshipId,
+        content: content.trim(),
+      });
+    }
   };
 
   return (

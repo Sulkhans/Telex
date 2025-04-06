@@ -17,6 +17,10 @@ const App = () => {
         <Route index element={<NoChatSelected />} />
         <Route path="/chat/:id" element={<Chat />} />
       </Route>
+      <Route path="/channel" element={<Main />}>
+        <Route index element={<NoChatSelected />} />
+        <Route path="/channel/:id" element={<Chat />} />
+      </Route>
     </Routes>
   );
 };
