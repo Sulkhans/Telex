@@ -28,3 +28,14 @@ export const getChannelMessages = async ({
   const res = await api.get("/", { params: { channelId, cursor } });
   return res.data;
 };
+
+export const sendChannelMessage = async ({
+  channelId,
+  content,
+}: {
+  channelId: string;
+  content: string;
+}): Promise<ChannelMessage> => {
+  const res = await api.post("/", { channelId, content });
+  return res.data;
+};

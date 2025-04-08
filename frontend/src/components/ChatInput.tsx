@@ -8,9 +8,8 @@ const ChatInput = () => {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim()) {
-      setMessage("");
-    }
+    sendMessage(message);
+    setMessage("");
   };
 
   const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -20,10 +19,8 @@ const ChatInput = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (message.trim()) {
-        sendMessage(message);
-        setMessage("");
-      }
+      sendMessage(message);
+      setMessage("");
     }
   };
 

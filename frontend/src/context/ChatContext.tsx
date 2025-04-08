@@ -6,7 +6,10 @@ import {
 } from "@tanstack/react-query";
 import { Channel, ChannelMessage, Friend, Message } from "../types/types";
 import { getMessages, sendMessage as apiSendMessage } from "../api/messages";
-import { getChannelMessages } from "../api/channelMessages";
+import {
+  getChannelMessages,
+  sendChannelMessage as apiSendChannelMesssage,
+} from "../api/channelMessages";
 import { useAuth } from "./AuthContext";
 
 type Selected =
@@ -100,62 +103,118 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
   const sendMessageMutation = useMutation({
     mutationFn: ({
-      friendshipId,
+      id,
       content,
     }: {
-      friendshipId: string;
+      id: string;
       content: string;
-    }) => apiSendMessage({ friendshipId, content }),
+    }): Promise<Message | ChannelMessage> => {
+      if (selected?.type === "friend")
+        return apiSendMessage({ friendshipId: id, content });
+      else return apiSendChannelMesssage({ channelId: id, content });
+    },
 
-    onMutate: async ({ content }) => {
-      if (selected?.type !== "friend") return;
-      await queryClient.cancelQueries({
-        queryKey: ["messages", "friend", selected!.data.friendshipId],
-      });
-      const previousMessages = queryClient.getQueryData([
-        "messages",
-        "friend",
-        selected!.data.friendshipId,
-      ]);
-      const optimisticMessage: Message = {
-        id: "temp" + Date.now(),
-        content,
-        senderId: user!.id,
-        read: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      queryClient.setQueryData(
-        ["messages", "friend", selected!.data.friendshipId],
-        (prev: any) => {
+    onMutate: async ({ id, content }) => {
+      if (selected?.type === "friend") {
+        await queryClient.cancelQueries({
+          queryKey: ["messages", "friend", id],
+        });
+        const previousMessages = queryClient.getQueryData([
+          "messages",
+          "friend",
+          id,
+        ]);
+        const optimisticMessage: Message = {
+          id: "temp" + Date.now(),
+          content,
+          senderId: user!.id,
+          read: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        queryClient.setQueryData(["messages", "friend", id], (prev: any) => {
           const newPages = [...prev.pages];
           newPages[0] = {
             ...newPages[0],
             messages: [optimisticMessage, ...newPages[0].messages],
           };
           return { ...prev, pages: newPages };
-        }
-      );
-      return { previousMessages };
+        });
+        return { previousMessages, type: "friend", id };
+      } else if (selected?.type === "channel") {
+        await queryClient.cancelQueries({
+          queryKey: ["messages", "channel", id],
+        });
+        const previousMessages = queryClient.getQueryData([
+          "messages",
+          "channel",
+          id,
+        ]);
+        const optimisticMessage: ChannelMessage = {
+          id: "temp" + Date.now(),
+          content,
+          senderId: user!.id,
+          channelId: id,
+          sender: {
+            fullName: user!.fullName,
+            image: user!.image,
+          },
+          updatedAt: new Date(),
+        };
+        queryClient.setQueryData(["messages", "channel", id], (prev: any) => {
+          const newPages = [...prev.pages];
+          newPages[0] = {
+            ...newPages[0],
+            messages: [optimisticMessage, ...newPages[0].messages],
+          };
+          return { ...prev, pages: newPages };
+        });
+        return { previousMessages, type: "channel", id };
+      }
     },
+
     onError: (_err, _newMessage, context) => {
-      queryClient.setQueryData(
-        ["messages", "friend", selected!.data.friendshipId],
-        context?.previousMessages
-      );
+      if (!context) return;
+      if (context.type === "friend") {
+        queryClient.setQueryData(
+          ["messages", "friend", context.id],
+          context.previousMessages
+        );
+      } else if (context.type === "channel") {
+        queryClient.setQueryData(
+          ["messages", "channel", context.id],
+          context.previousMessages
+        );
+      }
     },
-    onSuccess: (_res) => {
-      queryClient.invalidateQueries({
-        queryKey: ["messages", "friend", selected!.data.friendshipId],
-      });
+    onSuccess: (_res, { id }) => {
+      if (selected?.type === "friend") {
+        queryClient.invalidateQueries({
+          queryKey: ["messages", "friend", id],
+        });
+      } else if (selected?.type === "channel") {
+        queryClient.invalidateQueries({
+          queryKey: ["messages", "channel", id],
+        });
+      }
     },
   });
 
   const sendMessage = (content: string) => {
-    if (selected!.type === "friend") {
+    if (!selected) return;
+
+    const trimmedContent = content.trim();
+    if (!trimmedContent) return;
+
+    if (selected.type === "friend") {
       sendMessageMutation.mutate({
-        friendshipId: selected!.data.friendshipId,
-        content: content.trim(),
+        id: selected.data.friendshipId,
+        content: trimmedContent,
+      });
+    } else if (selected.type === "channel") {
+      sendMessageMutation.mutate({
+        id: selected.data.id,
+        content: trimmedContent,
       });
     }
   };
