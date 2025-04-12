@@ -50,3 +50,8 @@ export const editMessage = async ({
   const res = await api.put(`/${id}`, { content });
   return res.data;
 };
+
+export const deleteMessage = async (id: string) => {
+  const res = await api.delete(`/${id}`);
+  return res.data;
+};

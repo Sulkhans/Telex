@@ -1,5 +1,5 @@
-import Options from "../assets/Options.svg?react";
 import { useChat } from "../context/ChatContext";
+import Options from "../assets/Options.svg?react";
 
 type Props = {
   index: number;
@@ -8,7 +8,7 @@ type Props = {
 };
 
 const MessageOptions = ({ index, activeMessage, setActiveMessage }: Props) => {
-  const { messages, setMessageToEdit } = useChat();
+  const { messages, setMessageToEdit, deleteMessage } = useChat();
 
   const handleEdit = (index: number) => {
     setMessageToEdit({
@@ -19,6 +19,7 @@ const MessageOptions = ({ index, activeMessage, setActiveMessage }: Props) => {
   };
 
   const handleDelete = (index: number) => {
+    deleteMessage(messages![index].id);
     setActiveMessage(-1);
   };
 
@@ -42,7 +43,10 @@ const MessageOptions = ({ index, activeMessage, setActiveMessage }: Props) => {
           >
             Edit
           </button>
-          <button className="px-2 py-1.5 rounded-md hover:bg-dark-background/5 dark:hover:bg-light-background/5 transition-colors">
+          <button
+            onClick={() => handleDelete(index)}
+            className="px-2 py-1.5 rounded-md text-red-600 hover:bg-dark-background/5 dark:hover:bg-light-background/5 transition-colors"
+          >
             Delete
           </button>
         </div>

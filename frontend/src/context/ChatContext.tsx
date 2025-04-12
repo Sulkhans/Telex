@@ -9,11 +9,13 @@ import {
   getMessages,
   sendMessage as apiSendMessage,
   editMessage as apiEditMessage,
+  deleteMessage as apiDeleteMessage,
 } from "../api/messages";
 import {
   getMessages as getChannelMessages,
   sendMessage as apiSendChannelMesssage,
   editMessage as apiEditChannelMessage,
+  deleteMessage as apiDeleteChannelMessage,
 } from "../api/channelMessages";
 import { useAuth } from "./AuthContext";
 
@@ -43,6 +45,7 @@ type ChatContextType = {
   messageToEdit: messageToEdit | null;
   setMessageToEdit: React.Dispatch<React.SetStateAction<messageToEdit | null>>;
   editMessage: (id: string, content: string) => void;
+  deleteMessage: (id: string) => void;
 };
 
 const ChatContext = createContext<ChatContextType>({
@@ -59,6 +62,7 @@ const ChatContext = createContext<ChatContextType>({
   messageToEdit: null,
   setMessageToEdit: () => {},
   editMessage: () => {},
+  deleteMessage: () => {},
 });
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
@@ -238,6 +242,24 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
+  const deleteMessageMutation = useMutation({
+    mutationFn: (id: string) => {
+      if (selected?.type === "friend") return apiDeleteMessage(id);
+      else return apiDeleteChannelMessage(id);
+    },
+    onSuccess: (_res) => {
+      if (selected?.type === "friend") {
+        queryClient.invalidateQueries({
+          queryKey: ["messages", "friend", selected.data.friendshipId],
+        });
+      } else if (selected?.type === "channel") {
+        queryClient.invalidateQueries({
+          queryKey: ["messages", "channel", selected.data.id],
+        });
+      }
+    },
+  });
+
   const sendMessage = (content: string) => {
     if (!selected) return;
     const trimmedContent = content.trim();
@@ -257,14 +279,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const editMessage = (id: string, content: string) => {
-    if (!selected || !content.trim()) return;
     const trimmedContent = content.trim();
     if (!trimmedContent) return;
-
     editMessageMutation.mutate({
       id: id,
       content: trimmedContent,
     });
+  };
+
+  const deleteMessage = (id: string) => {
+    deleteMessageMutation.mutate(id);
   };
 
   return (
@@ -283,6 +307,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         messageToEdit,
         setMessageToEdit,
         editMessage,
+        deleteMessage,
       }}
     >
       {children}
