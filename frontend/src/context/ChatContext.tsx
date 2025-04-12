@@ -5,10 +5,15 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { Channel, ChannelMessage, Friend, Message } from "../types/types";
-import { getMessages, sendMessage as apiSendMessage } from "../api/messages";
 import {
-  getChannelMessages,
-  sendChannelMessage as apiSendChannelMesssage,
+  getMessages,
+  sendMessage as apiSendMessage,
+  editMessage as apiEditMessage,
+} from "../api/messages";
+import {
+  getMessages as getChannelMessages,
+  sendMessage as apiSendChannelMesssage,
+  editMessage as apiEditChannelMessage,
 } from "../api/channelMessages";
 import { useAuth } from "./AuthContext";
 
@@ -18,6 +23,11 @@ type Selected =
   | null;
 
 type QueryResult = { messages: Message[] } | { messages: ChannelMessage[] };
+
+type messageToEdit = {
+  id: string;
+  content: string;
+};
 
 type ChatContextType = {
   selected: Selected | null;
@@ -30,6 +40,9 @@ type ChatContextType = {
   isFetchingNextPage: boolean;
   sendMessage: (content: string) => void;
   isSending: boolean;
+  messageToEdit: messageToEdit | null;
+  setMessageToEdit: React.Dispatch<React.SetStateAction<messageToEdit | null>>;
+  editMessage: (id: string, content: string) => void;
 };
 
 const ChatContext = createContext<ChatContextType>({
@@ -43,10 +56,17 @@ const ChatContext = createContext<ChatContextType>({
   isFetchingNextPage: false,
   sendMessage: () => {},
   isSending: false,
+  messageToEdit: null,
+  setMessageToEdit: () => {},
+  editMessage: () => {},
 });
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [selected, setSelected] = useState<Selected | null>(null);
+  const [messageToEdit, setMessageToEdit] = useState<messageToEdit | null>(
+    null
+  );
+
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -200,9 +220,26 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
+  const editMessageMutation = useMutation({
+    mutationFn: ({ id, content }: { id: string; content: string }) => {
+      if (selected?.type === "friend") return apiEditMessage({ id, content });
+      else return apiEditChannelMessage({ id, content });
+    },
+    onSuccess: (_res) => {
+      if (selected?.type === "friend") {
+        queryClient.invalidateQueries({
+          queryKey: ["messages", "friend", selected.data.friendshipId],
+        });
+      } else if (selected?.type === "channel") {
+        queryClient.invalidateQueries({
+          queryKey: ["messages", "channel", selected.data.id],
+        });
+      }
+    },
+  });
+
   const sendMessage = (content: string) => {
     if (!selected) return;
-
     const trimmedContent = content.trim();
     if (!trimmedContent) return;
 
@@ -219,6 +256,17 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const editMessage = (id: string, content: string) => {
+    if (!selected || !content.trim()) return;
+    const trimmedContent = content.trim();
+    if (!trimmedContent) return;
+
+    editMessageMutation.mutate({
+      id: id,
+      content: trimmedContent,
+    });
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -232,6 +280,9 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         isFetchingNextPage,
         sendMessage,
         isSending: sendMessageMutation.isPending,
+        messageToEdit,
+        setMessageToEdit,
+        editMessage,
       }}
     >
       {children}

@@ -39,3 +39,14 @@ export const sendMessage = async ({
   const res = await api.post("/", { friendshipId, content });
   return res.data;
 };
+
+export const editMessage = async ({
+  id,
+  content,
+}: {
+  id: string;
+  content: string;
+}) => {
+  const res = await api.put(`/${id}`, { content });
+  return res.data;
+};

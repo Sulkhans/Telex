@@ -18,7 +18,7 @@ api.interceptors.response.use(
   }
 );
 
-export const getChannelMessages = async ({
+export const getMessages = async ({
   channelId,
   cursor,
 }: {
@@ -29,7 +29,7 @@ export const getChannelMessages = async ({
   return res.data;
 };
 
-export const sendChannelMessage = async ({
+export const sendMessage = async ({
   channelId,
   content,
 }: {
@@ -37,5 +37,16 @@ export const sendChannelMessage = async ({
   content: string;
 }): Promise<ChannelMessage> => {
   const res = await api.post("/", { channelId, content });
+  return res.data;
+};
+
+export const editMessage = async ({
+  id,
+  content,
+}: {
+  id: string;
+  content: string;
+}) => {
+  const res = await api.put(`/${id}`, { content });
   return res.data;
 };

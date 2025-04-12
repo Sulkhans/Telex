@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useAuth } from "../context/AuthContext";
 import { Message } from "../types/types";
 import ChatSkeleton from "./ChatSkeleton";
 import UserIcon from "./UserIcon";
+import MessageOptions from "./MessageOptions";
 
 const ChatMessages = () => {
   const {
@@ -16,7 +17,9 @@ const ChatMessages = () => {
     isSending,
   } = useChat();
   const { user } = useAuth();
+
   const ref = useRef<HTMLDivElement>(null);
+  const [showMore, setShowMore] = useState(-1);
 
   useEffect(() => {
     if (isFetchingNextPage || !hasNextPage || !ref.current) return;
@@ -33,6 +36,13 @@ const ChatMessages = () => {
     element.addEventListener("scroll", handleScroll);
     return () => element.removeEventListener("scroll", handleScroll);
   }, [fetchNextPage, hasNextPage, messages]);
+
+  const getMessageStatus = () => {
+    if (isSending) return "Sending";
+    if (!messages?.length) return null;
+    if (!isFriend || messages[0].senderId !== user!.id) return null;
+    return (messages[0] as Message).read ? "Seen" : "Sent";
+  };
 
   const getCornerStyle = (
     isUserMessage: boolean,
@@ -69,11 +79,7 @@ const ChatMessages = () => {
       ) : messages?.length ? (
         <>
           <span className="ml-auto mr-2 mb-2 -mt-3 text-xs text-secondary/75 font-medium">
-            {(() => {
-              if (isSending) return "Sending";
-              if (!isFriend || messages[0].senderId !== user!.id) return null;
-              return (messages[0] as Message).read ? "Seen" : "Sent";
-            })()}
+            {getMessageStatus()}
           </span>
           {messages.map((message, i) => {
             const isUserMessage = message.senderId === user!.id;
@@ -93,7 +99,7 @@ const ChatMessages = () => {
                 key={message.id}
                 className={isSameSender ? "mb-0.5" : "mb-4"}
               >
-                <div className="flex items-end">
+                <div className="flex items-end group">
                   {showUserIcon ? (
                     isFriend ? (
                       <UserIcon image={selected.data.image} compact />
@@ -104,13 +110,27 @@ const ChatMessages = () => {
                     !isUserMessage && <div className="size-10" />
                   )}
                   <div
+                    onMouseLeave={() => setShowMore(-1)}
                     className={`${
-                      isUserMessage
-                        ? "ml-auto bg-indigo-600 dark:bg-purple-900 text-foreground"
-                        : "ml-4 bg-light-background dark:bg-dark-background border border-transparent dark:border-dark-border"
-                    } ${corner} px-3 py-2 text-[15px] min-w-9 max-w-2xs min-[880px]:max-w-sm xl:max-w-2xl break-words`}
+                      isUserMessage ? "ml-auto" : "ml-4"
+                    } flex items-center gap-2`}
                   >
-                    {message.content}
+                    {isUserMessage && (
+                      <MessageOptions
+                        index={i}
+                        activeMessage={showMore}
+                        setActiveMessage={setShowMore}
+                      />
+                    )}
+                    <div
+                      className={`${
+                        isUserMessage
+                          ? "bg-indigo-600 dark:bg-purple-900 text-foreground"
+                          : "bg-light-background dark:bg-dark-background border border-transparent dark:border-dark-border"
+                      } ${corner} px-3 py-2 text-[15px] min-w-9 max-w-2xs min-[880px]:max-w-sm xl:max-w-2xl break-words`}
+                    >
+                      {message.content}
+                    </div>
                   </div>
                 </div>
               </div>
