@@ -23,7 +23,7 @@ const UserMenu = ({ menuVisible }: Props) => {
     <div
       className={`${
         !menuVisible && "opacity-0 pointer-events-none"
-      } absolute left-45 bottom-16 flex items-start gap-1`}
+      } absolute left-45 bottom-16 flex items-start gap-1 z-30`}
     >
       <div className="relative w-40 flex flex-col p-1 text-sm rounded-md bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border shadow-md transition-colors">
         <button

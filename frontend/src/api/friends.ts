@@ -22,3 +22,8 @@ export const getFriendsList = async (): Promise<{ friends: Friend[] }> => {
   const res = await api.get("/list");
   return res.data;
 };
+
+export const getFriendRequests = async (): Promise<{ requests: Friend[] }> => {
+  const res = await api.get("/");
+  return res.data;
+};
