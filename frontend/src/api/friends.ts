@@ -27,3 +27,18 @@ export const getFriendRequests = async (): Promise<{ requests: Friend[] }> => {
   const res = await api.get("/");
   return res.data;
 };
+
+export const sendFriendRequest = async (username: string) => {
+  const res = await api.post("/", { username });
+  return res.data;
+};
+
+export const acceptFriendRequest = async (id: string) => {
+  const res = await api.put(`/${id}`);
+  return res.data;
+};
+
+export const deleteFriend = async (id: string) => {
+  const res = await api.delete(`/${id}`);
+  return res.data;
+};

@@ -59,7 +59,7 @@ model DirectMessage {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  friendship   Friendship @relation(fields: [friendshipId], references: [id])
+  friendship   Friendship @relation(fields: [friendshipId], references: [id], onDelete: Cascade)
   sender       User       @relation("MessageSender", fields: [senderId], references: [id])
 }
 
@@ -83,7 +83,7 @@ model ChannelMember {
   isAdmin   Boolean @default(false)
 
   channel   Channel @relation(fields: [channelId], references: [id])
-  user      User    @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([channelId, userId])
 }

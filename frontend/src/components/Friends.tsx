@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useChat } from "../context/ChatContext";
@@ -6,10 +6,13 @@ import { getFriendRequests, getFriendsList } from "../api/friends";
 import Skeleton from "./Skeleton";
 import UserIcon from "./UserIcon";
 import Users from "../assets/users.svg?react";
+import FriendsModal from "./FriendsModal";
 
 const Friends = () => {
   const { id } = useParams();
   const { setSelected } = useChat();
+
+  const [showModal, setShowModal] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["friend"],
@@ -57,7 +60,10 @@ const Friends = () => {
             ))
           : isLoading && <Skeleton quantity={6} />}
       </div>
-      <button className="flex justify-center items-center rounded-lg text-foreground text-sm font-semibold bg-indigo-600 dark:bg-purple-900 transition-all select-none">
+      <button
+        onClick={() => setShowModal(true)}
+        className="flex justify-center items-center rounded-lg text-foreground text-sm font-semibold bg-indigo-600 dark:bg-purple-900 transition-all select-none"
+      >
         <Users className="size-4 mr-2 fill-foreground" />
         <span>Friend requests</span>
         {requests?.requests && (
@@ -66,6 +72,13 @@ const Friends = () => {
           </span>
         )}
       </button>
+      {requests && (
+        <FriendsModal
+          requests={requests.requests}
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </>
   );
 };

@@ -35,6 +35,7 @@ const getFriendRequests = async (req, res) => {
     const requests = await prisma.friendship.findMany({
       where: { receiverId: req.user.id, status: false },
       select: {
+        id: true,
         createdAt: true,
         sender: {
           select: { id: true, fullName: true, username: true, image: true },
