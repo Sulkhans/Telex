@@ -82,7 +82,7 @@ model ChannelMember {
   userId    String
   isAdmin   Boolean @default(false)
 
-  channel   Channel @relation(fields: [channelId], references: [id])
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([channelId, userId])

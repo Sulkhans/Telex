@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useChat } from "../context/ChatContext";
@@ -6,10 +6,13 @@ import { getChannelsList } from "../api/channels";
 import Skeleton from "./Skeleton";
 import Plus from "../assets/plus.svg?react";
 import Hash from "../assets/hash.svg?react";
+import ChannelModal from "./ChannelModal";
 
 const Channels = () => {
   const { id } = useParams();
   const { setSelected } = useChat();
+
+  const [showModal, setShowModal] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["channel"],
@@ -50,10 +53,14 @@ const Channels = () => {
             ))
           : isLoading && <Skeleton quantity={6} />}
       </div>
-      <button className="flex justify-center items-center rounded-lg text-foreground text-sm font-semibold bg-indigo-600 dark:bg-purple-900 transition-all select-none">
+      <button
+        onClick={() => setShowModal(true)}
+        className="flex justify-center items-center rounded-lg text-foreground text-sm font-semibold bg-indigo-600 dark:bg-purple-900 transition-all select-none"
+      >
         <Plus className="size-5 mr-1 fill-foreground" />
         Create new channel
       </button>
+      <ChannelModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </>
   );
 };
