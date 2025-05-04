@@ -34,6 +34,8 @@ type messageToEdit = {
 type ChatContextType = {
   selected: Selected | null;
   setSelected: React.Dispatch<React.SetStateAction<Selected | null>>;
+  showDetails: boolean;
+  toggleDetails: () => void;
   messages: Message[] | ChannelMessage[] | null;
   isLoading: boolean;
   isError: boolean;
@@ -51,6 +53,8 @@ type ChatContextType = {
 const ChatContext = createContext<ChatContextType>({
   selected: null,
   setSelected: () => {},
+  showDetails: true,
+  toggleDetails: () => {},
   messages: null,
   isLoading: false,
   isError: false,
@@ -70,6 +74,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [messageToEdit, setMessageToEdit] = useState<messageToEdit | null>(
     null
   );
+  const [showDetails, setShowDetails] = useState(true);
+  const toggleDetails = () => setShowDetails(!showDetails);
 
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -296,6 +302,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       value={{
         selected,
         setSelected,
+        showDetails,
+        toggleDetails,
         messages,
         isLoading,
         isError,

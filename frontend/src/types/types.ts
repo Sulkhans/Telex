@@ -61,3 +61,15 @@ export type ChannelMessage = {
     image: string;
   };
 };
+
+export type ChannelMember = {
+  id: string;
+  channelId: string;
+  userId: string;
+  isAdmin: boolean;
+  user: {
+    fullName: string;
+    username: string;
+    image: string;
+  };
+};

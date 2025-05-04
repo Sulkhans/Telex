@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Channel } from "../types/types";
+import { Channel, ChannelMember } from "../types/types";
 
 const api = axios.create({
   baseURL: "http://localhost:5000/api/channel",
@@ -13,5 +13,23 @@ export const getChannelsList = async (): Promise<{ channels: Channel[] }> => {
 
 export const createChannel = async (name: string): Promise<Channel> => {
   const res = await api.post("/", { name });
+  return res.data;
+};
+
+export const updateChannel = async ({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}): Promise<Channel> => {
+  const res = await api.put(`/${id}`, { name });
+  return res.data;
+};
+
+export const getMembers = async (
+  id: string
+): Promise<{ members: ChannelMember[] }> => {
+  const res = await api.get(`/${id}`);
   return res.data;
 };

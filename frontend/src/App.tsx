@@ -3,8 +3,9 @@ import Auth from "./pages/Auth";
 import AuthLayout from "./components/AuthLayout";
 import Verify from "./pages/Verify";
 import Main from "./pages/Main";
-import Chat from "./components/Chat";
 import NoChatSelected from "./components/NoChatSelected";
+import Chat from "./components/Chat";
+import Channel from "./components/Channel";
 
 const App = () => {
   return (
@@ -19,7 +20,7 @@ const App = () => {
       </Route>
       <Route path="/channel" element={<Main />}>
         <Route index element={<NoChatSelected />} />
-        <Route path="/channel/:id" element={<Chat />} />
+        <Route path="/channel/:id" element={<Channel />} />
       </Route>
     </Routes>
   );
