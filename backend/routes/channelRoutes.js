@@ -8,6 +8,7 @@ import {
   generateInvite,
   joinChannel,
   leaveChannel,
+  getMembers,
   updateMember,
   removeMember,
 } from "../controllers/channelController.js";
@@ -21,6 +22,6 @@ router.post("/join/:token", joinChannel);
 router.post("/:id/invite", generateInvite);
 router.delete("/:id/leave", leaveChannel);
 router.route("/:id/admin").put(updateMember).delete(removeMember);
-router.route("/:id").put(updateChannel).delete(deleteChannel);
+router.route("/:id").get(getMembers).put(updateChannel).delete(deleteChannel);
 
 export default router;

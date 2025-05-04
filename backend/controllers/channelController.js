@@ -61,8 +61,14 @@ const updateChannel = async (req, res) => {
     const { name } = req.body;
     const channel = await prisma.channel.findFirst({ where: { id } });
     if (!channel) return res.status(404).json({ message: "Channel not found" });
-    if (channel.createdById !== req.user.id)
-      return res.status(403).json({ message: "Must be channel creator" });
+
+    const requester = await prisma.channelMember.findFirst({
+      where: { channelId: id, userId: req.user.id },
+    });
+    console.log(requester);
+    if (!requester || !requester.isAdmin)
+      return res.status(400).json({ message: "Bad request" });
+
     if (!name || name.length < 3)
       return res.status(400).json({ message: "Channel name is too short" });
 
@@ -81,8 +87,11 @@ const deleteChannel = async (req, res) => {
     const { id } = req.params;
     const channel = await prisma.channel.findFirst({ where: { id } });
     if (!channel) return res.status(404).json({ message: "Channel not found" });
-    if (channel.createdById !== req.user.id)
-      return res.status(403).json({ message: "Must be channel creator" });
+    const requester = await prisma.channelMember.findFirst({
+      where: { channelId: id, userId: req.user.id },
+    });
+    if (!requester || !requester.isAdmin)
+      return res.status(400).json({ message: "Bad request" });
 
     await prisma.channelMessage.deleteMany({ where: { channelId: id } });
     await prisma.channelMember.deleteMany({ where: { channelId: id } });
@@ -164,6 +173,29 @@ const leaveChannel = async (req, res) => {
   }
 };
 
+const getMembers = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const membership = await prisma.channelMember.findFirst({
+      where: { channelId: id, userId: req.user.id },
+    });
+    if (!membership)
+      return res.status(404).json({ message: "Not a channel member" });
+
+    const members = await prisma.channelMember.findMany({
+      where: { channelId: id },
+      include: {
+        user: {
+          select: { fullName: true, username: true, image: true },
+        },
+      },
+    });
+    res.status(200).json({ members });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const updateMember = async (req, res) => {
   try {
     const { id } = req.params;
@@ -221,6 +253,7 @@ export {
   generateInvite,
   joinChannel,
   leaveChannel,
+  getMembers,
   updateMember,
   removeMember,
 };
