@@ -64,6 +64,9 @@
   .scroll::-webkit-scrollbar-corner {
     @apply w-0;
   }
+  .scroll-hide::-webkit-scrollbar {
+    @apply size-0;
+  }
 
   .loader {
     @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 rounded-full border-5 border-y-primary dark:border-y-foreground border-x-transparent animate-[rotation_2s_linear_infinite];
