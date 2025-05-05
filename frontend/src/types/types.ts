@@ -73,3 +73,5 @@ export type ChannelMember = {
     image: string;
   };
 };
+
+export type ModalType = "invite" | "manage" | "leave" | null;

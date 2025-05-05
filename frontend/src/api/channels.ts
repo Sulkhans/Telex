@@ -27,6 +27,23 @@ export const updateChannel = async ({
   return res.data;
 };
 
+export const leaveChannel = async (id: string) => {
+  const res = await api.delete(`/${id}/leave`);
+  return res.data;
+};
+
+export const deleteChannel = async (id: string) => {
+  const res = await api.delete(`/${id}`);
+  return res.data;
+};
+
+export const generateInvite = async (
+  id: string
+): Promise<{ invite: string }> => {
+  const res = await api.post(`/${id}/invite`);
+  return res.data;
+};
+
 export const getMembers = async (
   id: string
 ): Promise<{ members: ChannelMember[] }> => {
