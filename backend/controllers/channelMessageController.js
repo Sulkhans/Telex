@@ -62,9 +62,22 @@ const editMessage = async (req, res) => {
 const deleteMessage = async (req, res) => {
   try {
     const { id } = req.params;
-    const message = await prisma.channelMessage.findFirst({ where: { id } });
+    const message = await prisma.channelMessage.findFirst({
+      where: { id },
+      include: { channel: true },
+    });
     if (!message) return res.status(404).json({ message: "Message not found" });
-    if (message.senderId !== req.user.id && !req.user.isAdmin)
+
+    const membership = await prisma.channelMember.findUnique({
+      where: {
+        channelId_userId: {
+          channelId: message.channelId,
+          userId: req.user.id,
+        },
+      },
+    });
+    const isAdmin = membership?.isAdmin || false;
+    if (message.senderId !== req.user.id && !isAdmin)
       return res.status(403).json({ message: "Unauthorized" });
 
     await prisma.channelMessage.delete({ where: { id } });

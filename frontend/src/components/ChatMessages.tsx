@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useAuth } from "../context/AuthContext";
-import { Message } from "../types/types";
+import { ChannelMessage, Message } from "../types/types";
 import ChatSkeleton from "./ChatSkeleton";
 import UserIcon from "./UserIcon";
 import MessageOptions from "./MessageOptions";
@@ -45,11 +45,11 @@ const ChatMessages = () => {
   };
 
   const getCornerStyle = (
-    isUserMessage: boolean,
+    isOwnMessage: boolean,
     isSameSender: boolean,
     isNextSameSender: boolean
   ) => {
-    if (isUserMessage) {
+    if (isOwnMessage) {
       if (!isSameSender && !isNextSameSender) return "rounded-[1.25rem]";
       if (!isSameSender)
         return "rounded-b-[1.25rem] rounded-tl-[1.25rem] rounded-tr-md";
@@ -82,15 +82,15 @@ const ChatMessages = () => {
             {getMessageStatus()}
           </span>
           {messages.map((message, i) => {
-            const isUserMessage = message.senderId === user!.id;
+            const isOwnMessage = message.senderId === user!.id;
             const isSameSender =
               i > 0 && messages[i - 1].senderId === message.senderId;
             const isNextSameSender =
               i < messages.length - 1 &&
               messages[i + 1].senderId === message.senderId;
-            const showUserIcon = !isUserMessage && (i === 0 || !isSameSender);
+            const showUserIcon = !isOwnMessage && (i === 0 || !isSameSender);
             const corner = getCornerStyle(
-              isUserMessage,
+              isOwnMessage,
               isSameSender,
               isNextSameSender
             );
@@ -101,36 +101,47 @@ const ChatMessages = () => {
               >
                 <div className="flex items-end group">
                   {showUserIcon ? (
-                    isFriend ? (
-                      <UserIcon image={selected.data.image} compact />
-                    ) : (
-                      <div className="size-12 rounded-full bg-secondary/10" />
-                    )
+                    <UserIcon
+                      compact
+                      image={
+                        isFriend
+                          ? selected.data.image
+                          : (message as ChannelMessage).sender.image
+                      }
+                    />
                   ) : (
-                    !isUserMessage && <div className="size-10" />
+                    !isOwnMessage && <div className="w-10 h-10 flex-shrink-0" />
                   )}
                   <div
                     onMouseLeave={() => setShowMore(-1)}
                     className={`${
-                      isUserMessage ? "ml-auto" : "ml-4"
+                      isOwnMessage ? "ml-auto" : "ml-4"
                     } flex items-center gap-2`}
                   >
-                    {isUserMessage && (
+                    {isOwnMessage && (
                       <MessageOptions
                         index={i}
                         activeMessage={showMore}
                         setActiveMessage={setShowMore}
+                        editable
                       />
                     )}
                     <div
                       className={`${
-                        isUserMessage
+                        isOwnMessage
                           ? "bg-indigo-600 dark:bg-purple-900 text-foreground"
                           : "bg-light-background dark:bg-dark-background border border-transparent dark:border-dark-border"
                       } ${corner} px-3 py-2 text-[15px] min-w-9 max-w-2xs min-[880px]:max-w-sm xl:max-w-2xl break-words`}
                     >
                       {message.content}
                     </div>
+                    {!isFriend && selected.data.isAdmin && !isOwnMessage && (
+                      <MessageOptions
+                        index={i}
+                        activeMessage={showMore}
+                        setActiveMessage={setShowMore}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
