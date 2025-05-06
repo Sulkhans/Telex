@@ -44,6 +44,13 @@ export const generateInvite = async (
   return res.data;
 };
 
+export const joinChannel = async (
+  token: string
+): Promise<{ channelId: string }> => {
+  const res = await api.post(`/join/${token}`);
+  return res.data;
+};
+
 export const getMembers = async (
   id: string
 ): Promise<{ members: ChannelMember[] }> => {
