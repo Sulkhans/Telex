@@ -89,6 +89,8 @@ const ChatMessages = () => {
               i < messages.length - 1 &&
               messages[i + 1].senderId === message.senderId;
             const showUserIcon = !isOwnMessage && (i === 0 || !isSameSender);
+            const showUsername =
+              !isFriend && !isOwnMessage && !isNextSameSender;
             const corner = getCornerStyle(
               isOwnMessage,
               isSameSender,
@@ -99,6 +101,11 @@ const ChatMessages = () => {
                 key={message.id}
                 className={isSameSender ? "mb-0.5" : "mb-4"}
               >
+                {showUsername && (
+                  <div className="ml-16.5 mb-1 text-xs text-secondary font-medium">
+                    {(message as ChannelMessage).sender.fullName}
+                  </div>
+                )}
                 <div className="flex items-end group">
                   {showUserIcon ? (
                     <UserIcon
