@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useChat } from "../context/ChatContext";
+import { useAuth } from "../context/AuthContext";
 import { getMembers } from "../api/channels";
-import { ModalType } from "../types/types";
+import { ChannelMember, ModalType } from "../types/types";
 import DetailsModals from "./DetailsModals";
 import Skeleton from "./Skeleton";
 import UserIcon from "./UserIcon";
@@ -13,15 +14,27 @@ import Settings from "../assets/settings.svg?react";
 
 const Details = () => {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const [activeMember, setActiveMember] = useState<ChannelMember | null>(null);
+
   const { selected } = useChat();
+  const { user } = useAuth();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["members", selected!.data.id],
+    queryKey: ["members", selected?.data.id],
     queryFn: () => getMembers(selected!.data.id),
     refetchOnWindowFocus: false,
   });
 
   if (!selected || selected.type !== "channel") return null;
+
+  const handleMemberClick = (member: ChannelMember) => {
+    if (!selected || selected.type !== "channel") return;
+    if (selected.data.isAdmin && member.userId !== user!.id) {
+      setActiveMember(member);
+      setActiveModal("member");
+    }
+  };
+
   return (
     <>
       <aside className="min-w-72 xl:min-w-75 max-w-75 flex flex-col">
@@ -66,6 +79,7 @@ const Details = () => {
                 {data.members.map((member) => (
                   <div
                     key={member.id}
+                    onClick={() => handleMemberClick(member)}
                     className="px-2 py-1.5 flex items-center gap-4 select-none relative rounded-lg hover:bg-dark-background/5 dark:hover:bg-light-background/5 transition-all cursor-pointer"
                   >
                     <UserIcon image={member.user.image} compact />
@@ -89,6 +103,7 @@ const Details = () => {
           active={activeModal}
           close={() => setActiveModal(null)}
           channel={selected.data}
+          member={activeMember}
         />
       )}
     </>

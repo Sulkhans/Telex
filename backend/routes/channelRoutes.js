@@ -21,7 +21,8 @@ router.route("/").post(createChannel).get(getChannels);
 router.post("/join/:token", joinChannel);
 router.post("/:id/invite", generateInvite);
 router.delete("/:id/leave", leaveChannel);
-router.route("/:id/admin").put(updateMember).delete(removeMember);
+router.put("/:id/admin", updateMember);
+router.delete("/:id/admin/:memberId", removeMember);
 router.route("/:id").get(getMembers).put(updateChannel).delete(deleteChannel);
 
 export default router;

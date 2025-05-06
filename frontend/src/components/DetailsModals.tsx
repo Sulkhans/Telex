@@ -5,18 +5,21 @@ import {
   deleteChannel,
   generateInvite,
   leaveChannel,
+  removeMember,
   updateChannel,
+  updateMember,
 } from "../api/channels";
-import { Channel, ModalType } from "../types/types";
+import { Channel, ChannelMember, ModalType } from "../types/types";
 import Modal from "./Modal";
 
 type Props = {
   active: ModalType;
   close: () => void;
   channel: Channel;
+  member: ChannelMember | null;
 };
 
-const DetailsModals = ({ active, close, channel }: Props) => {
+const DetailsModals = ({ active, close, channel, member }: Props) => {
   const [name, setName] = useState(channel.name);
   const [checked, setChecked] = useState(false);
 
@@ -54,6 +57,35 @@ const DetailsModals = ({ active, close, channel }: Props) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["channel"] });
       navigate("/channel");
+    },
+  });
+
+  const { mutate: updateMemberMutation } = useMutation({
+    mutationFn: ({
+      channelId,
+      memberId,
+    }: {
+      channelId: string;
+      memberId: string;
+    }) => updateMember({ channelId, memberId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["members", channel.id] });
+      close();
+    },
+  });
+
+  const { mutate: removeMemberMutation } = useMutation({
+    mutationFn: ({
+      channelId,
+      memberId,
+    }: {
+      channelId: string;
+      memberId: string;
+    }) => removeMember({ channelId, memberId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["members", channel.id] });
+      queryClient.invalidateQueries({ queryKey: ["channel"] });
+      close();
     },
   });
 
@@ -135,6 +167,35 @@ const DetailsModals = ({ active, close, channel }: Props) => {
             className="px-4 py-2 bg-red-600 hover:bg-red-600/80 text-white rounded-md"
           >
             Leave
+          </button>
+        </div>
+      </Modal>
+      <Modal title="Manage Member" isOpen={active === "member"} onClose={close}>
+        <p className="-mt-2 mb-2 text-sm text-secondary">
+          Select an action to manage this member
+        </p>
+        <div className="flex justify-end gap-2 text-sm font-medium">
+          <button
+            onClick={() =>
+              removeMemberMutation({
+                channelId: channel.id,
+                memberId: member!.id,
+              })
+            }
+            className="w-full py-2 bg-red-600 active:bg-red-600/80 text-white rounded-md"
+          >
+            Remove
+          </button>
+          <button
+            onClick={() =>
+              updateMemberMutation({
+                channelId: channel.id,
+                memberId: member!.id,
+              })
+            }
+            className="w-full py-2 rounded-md text-sm text-white bg-indigo-600 dark:bg-purple-900 active:bg-indigo-600/90 dark:active:bg-purple-900/90"
+          >
+            {member?.isAdmin ? "Demote" : "Promote"}
           </button>
         </div>
       </Modal>

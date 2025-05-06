@@ -50,3 +50,25 @@ export const getMembers = async (
   const res = await api.get(`/${id}`);
   return res.data;
 };
+
+export const updateMember = async ({
+  channelId,
+  memberId,
+}: {
+  channelId: string;
+  memberId: string;
+}) => {
+  const res = await api.put(`/${channelId}/admin`, { memberId });
+  return res.data;
+};
+
+export const removeMember = async ({
+  channelId,
+  memberId,
+}: {
+  channelId: string;
+  memberId: string;
+}): Promise<Channel> => {
+  const res = await api.delete(`/${channelId}/admin/${memberId}`);
+  return res.data;
+};

@@ -208,7 +208,7 @@ const updateMember = async (req, res) => {
       return res.status(400).json({ message: "Bad request" });
 
     const member = await prisma.channelMember.findFirst({
-      where: { channelId: id, userId: memberId },
+      where: { channelId: id, id: memberId },
     });
     if (!member) return res.status(404).json({ message: "Member not found" });
 
@@ -224,8 +224,7 @@ const updateMember = async (req, res) => {
 
 const removeMember = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { memberId } = req.body;
+    const { id, memberId } = req.params;
 
     const requester = await prisma.channelMember.findFirst({
       where: { channelId: id, userId: req.user.id },
@@ -234,7 +233,7 @@ const removeMember = async (req, res) => {
       return res.status(400).json({ message: "Bad request" });
 
     const member = await prisma.channelMember.findFirst({
-      where: { channelId: id, userId: memberId },
+      where: { channelId: id, id: memberId },
     });
     if (!member) return res.status(404).json({ message: "Member not found" });
 

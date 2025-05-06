@@ -74,4 +74,4 @@ export type ChannelMember = {
   };
 };
 
-export type ModalType = "invite" | "manage" | "leave" | null;
+export type ModalType = "invite" | "manage" | "leave" | "member" | null;
