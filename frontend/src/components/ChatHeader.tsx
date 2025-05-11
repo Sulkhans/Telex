@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useChat } from "../context/ChatContext";
 import { deleteFriend } from "../api/friends";
-import UserIcon from "./UserIcon";
+import UserIcon from "./ui/UserIcon";
+import Modal from "./ui/Modal";
 import Options from "../assets/options.svg?react";
-import Modal from "./Modal";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 
 const ChatHeader = () => {
   const { selected, toggleDetails } = useChat();

@@ -6,9 +6,9 @@ import {
   deleteFriend,
   sendFriendRequest,
 } from "../api/friends";
-import Modal from "./Modal";
-import Input from "./Input";
-import UserIcon from "./UserIcon";
+import Modal from "./ui/Modal";
+import Input from "./ui/Input";
+import UserIcon from "./ui/UserIcon";
 
 type Props = {
   isOpen: boolean;

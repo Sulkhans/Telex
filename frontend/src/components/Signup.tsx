@@ -2,8 +2,8 @@ import { Fragment, useState } from "react";
 import { ErrorType, SignupData } from "../types/types";
 import { signup } from "../api/auth";
 import { useMutation } from "@tanstack/react-query";
-import Button from "./Button";
-import Input from "./Input";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
 import Eye from "../assets/eye.svg?react";
 
 type Props = {

@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import useTheme from "../hooks/useTheme";
-import Telex from "../components/Telex";
+import Telex from "./ui/Telex";
 import Sun from "../assets/sun.svg?react";
 import Moon from "../assets/moon.svg?react";
 

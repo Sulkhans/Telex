@@ -1,5 +1,5 @@
-import { useChat } from "../context/ChatContext";
-import Options from "../assets/Options.svg?react";
+import { useChat } from "../../context/ChatContext";
+import Options from "../../assets/Options.svg?react";
 
 type Props = {
   index: number;

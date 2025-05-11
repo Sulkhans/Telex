@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "./ui/Input";
+import Button from "./ui/Button";
 import Eye from "../assets/eye.svg?react";
 
 type Props = {

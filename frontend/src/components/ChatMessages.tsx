@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useChat } from "../context/ChatContext";
 import { useAuth } from "../context/AuthContext";
 import { ChannelMessage, Message } from "../types/types";
-import ChatSkeleton from "./ChatSkeleton";
-import UserIcon from "./UserIcon";
-import MessageOptions from "./MessageOptions";
+import ChatSkeleton from "./ui/ChatSkeleton";
+import UserIcon from "./ui/UserIcon";
+import MessageOptions from "./ui/MessageOptions";
 
 const ChatMessages = () => {
   const {

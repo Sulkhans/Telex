@@ -5,8 +5,8 @@ import { useChat } from "../context/ChatContext";
 import { getFriendRequests, getFriendsList } from "../api/friends";
 import { markAsRead } from "../api/messages";
 import { Friend } from "../types/types";
-import Skeleton from "./Skeleton";
-import UserIcon from "./UserIcon";
+import Skeleton from "./ui/Skeleton";
+import UserIcon from "./ui/UserIcon";
 import Users from "../assets/users.svg?react";
 import FriendsModal from "./FriendsModal";
 

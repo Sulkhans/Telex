@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import UserIcon from "./UserIcon";
+import UserIcon from "./ui/UserIcon";
 import UserMenu from "./UserMenu";
 import Options from "../assets/options.svg?react";
 

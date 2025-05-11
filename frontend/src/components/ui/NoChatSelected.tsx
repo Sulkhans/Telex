@@ -1,4 +1,4 @@
-import Message from "../assets/message.svg?react";
+import Message from "../../assets/message.svg?react";
 
 const NoChatSelected = () => {
   return (

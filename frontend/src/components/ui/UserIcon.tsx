@@ -1,4 +1,4 @@
-import { Status } from "../types/types";
+import { Status } from "../../types/types";
 
 type Props = {
   image: string;

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { verify } from "../api/auth";
-import Loader from "../components/Loader";
+import Loader from "../components/ui/Loader";
 
 const Verify = () => {
   const navigate = useNavigate();

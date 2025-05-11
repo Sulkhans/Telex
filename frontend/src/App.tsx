@@ -4,7 +4,7 @@ import AuthLayout from "./components/AuthLayout";
 import Verify from "./pages/Verify";
 import Invite from "./pages/Invite";
 import Main from "./pages/Main";
-import NoChatSelected from "./components/NoChatSelected";
+import NoChatSelected from "./components/ui/NoChatSelected";
 import Chat from "./components/Chat";
 import Channel from "./components/Channel";
 

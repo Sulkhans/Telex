@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Modal from "./Modal";
-import Input from "./Input";
-import { createChannel } from "../api/channels";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createChannel } from "../api/channels";
+import Modal from "./ui/Modal";
+import Input from "./ui/Input";
 
 type Props = {
   isOpen: boolean;

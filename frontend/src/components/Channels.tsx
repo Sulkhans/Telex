@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useChat } from "../context/ChatContext";
 import { getChannelsList } from "../api/channels";
-import Skeleton from "./Skeleton";
+import Skeleton from "./ui/Skeleton";
 import Plus from "../assets/plus.svg?react";
 import Hash from "../assets/hash.svg?react";
 import ChannelModal from "./ChannelModal";

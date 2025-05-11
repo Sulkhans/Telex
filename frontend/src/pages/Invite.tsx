@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import { joinChannel } from "../api/channels";
-import Loader from "../components/Loader";
+import Loader from "../components/ui/Loader";
 
 const Invite = () => {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import Loader from "../components/Loader";
+import Loader from "../components/ui/Loader";
 
 const Main = () => {
   const { user, isInitialLoading } = useAuth();

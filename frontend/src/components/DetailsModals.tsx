@@ -10,7 +10,7 @@ import {
   updateMember,
 } from "../api/channels";
 import { Channel, ChannelMember, ModalType } from "../types/types";
-import Modal from "./Modal";
+import Modal from "./ui/Modal";
 
 type Props = {
   active: ModalType;

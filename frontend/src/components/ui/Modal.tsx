@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Close from "../assets/close.svg?react";
+import Close from "../../assets/close.svg?react";
 
 type Props = {
   isOpen: boolean;
