@@ -53,7 +53,7 @@ const createUser = async (req, res) => {
     const token = crypto.randomBytes(32).toString("hex");
 
     try {
-      await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           token,
           username: username.toLowerCase(),
@@ -67,11 +67,7 @@ const createUser = async (req, res) => {
         },
       });
       const confirmLink = `${process.env.CORS_ORIGIN}/verify?token=${token}`;
-      await sendEmail(
-        email,
-        "Confirm Your Email",
-        `Click the link to verify: ${confirmLink}`
-      );
+      await sendEmail(email, user.fullName, confirmLink);
       res.status(201).json({
         message:
           "Registration successful. Check your email to verify your account",
