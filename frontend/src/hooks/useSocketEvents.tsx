@@ -4,6 +4,7 @@ import { useSocket } from "../context/SocketContext";
 import { useChat } from "../context/ChatContext";
 import { markAsRead } from "../api/messages";
 import { ChannelMessage, Friend, Message, Status } from "../types/types";
+import notification from "../assets/sounds/notification.mp3";
 
 const debounce = (func: Function, delay: number) => {
   let timeoutId: NodeJS.Timeout;
@@ -92,6 +93,8 @@ export const useSocketEvents = () => {
           return { ...prev, pages: newPages };
         }
       );
+      const sound = new Audio(notification);
+      sound.play();
     };
 
     const handleMessageRead = (friendshipId: string) => {
