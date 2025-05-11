@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useSocketEvents } from "../hooks/useSocketEvents";
 import User from "./User";
 import Friends from "./Friends";
 import Channels from "./Channels";
 
 const Sidebar = () => {
+  useSocketEvents();
   const [toggle, setToggle] = useState(
     window.location.pathname.split("/")[1] === "chat"
   );

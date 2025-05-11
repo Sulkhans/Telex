@@ -64,8 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logoutMutation = useMutation({
     mutationFn: apiLogout,
     onSuccess: () => {
-      queryClient.setQueryData(["user"], null);
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.clear();
       navigate("/");
     },
   });

@@ -159,6 +159,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
           content,
           senderId: user!.id,
           read: false,
+          friendshipId: id,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -217,14 +218,19 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         );
       }
     },
-    onSuccess: (_res, { id }) => {
+
+    onSuccess: (res, { id }) => {
       if (selected?.type === "friend") {
-        queryClient.invalidateQueries({
-          queryKey: ["messages", "friend", id],
+        queryClient.setQueryData(["messages", "friend", id], (prev: any) => {
+          const newPages = [...prev.pages];
+          newPages[0].messages[0] = res;
+          return { ...prev, pages: newPages };
         });
       } else if (selected?.type === "channel") {
-        queryClient.invalidateQueries({
-          queryKey: ["messages", "channel", id],
+        queryClient.setQueryData(["messages", "channel", id], (prev: any) => {
+          const newPages = [...prev.pages];
+          newPages[0].messages[0] = res;
+          return { ...prev, pages: newPages };
         });
       }
     },

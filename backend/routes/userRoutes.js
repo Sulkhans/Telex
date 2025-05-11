@@ -16,6 +16,6 @@ router.put("/verify", verifyEmail);
 router.post("/login", loginUser);
 router.get("/", validateToken, getUser);
 router.put("/status", validateToken, updateStatus);
-router.post("/logout", logoutUser);
+router.post("/logout", validateToken, logoutUser);
 
 export default router;

@@ -5,6 +5,7 @@ import {
   getMessages,
   editMessage,
   deleteMessage,
+  markAsRead,
 } from "../controllers/messageController.js";
 
 const router = express.Router();
@@ -12,7 +13,8 @@ const router = express.Router();
 router
   .route("/")
   .post(validateToken, sendMessage)
-  .get(validateToken, getMessages);
+  .get(validateToken, getMessages)
+  .put(validateToken, markAsRead);
 router
   .route("/:id")
   .put(validateToken, editMessage)

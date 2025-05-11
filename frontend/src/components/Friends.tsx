@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useChat } from "../context/ChatContext";
 import { getFriendRequests, getFriendsList } from "../api/friends";
+import { markAsRead } from "../api/messages";
+import { Friend } from "../types/types";
 import Skeleton from "./Skeleton";
 import UserIcon from "./UserIcon";
 import Users from "../assets/users.svg?react";
@@ -13,6 +15,8 @@ const Friends = () => {
   const { setSelected } = useChat();
 
   const [showModal, setShowModal] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["friend"],
@@ -29,7 +33,29 @@ const Friends = () => {
   useEffect(() => {
     if (id) {
       const target = data?.friends.find((user) => user.friendshipId === id);
-      if (target) setSelected({ type: "friend", data: target });
+      if (target) {
+        setSelected({ type: "friend", data: target });
+        if (target.unreadMessageCount !== 0) {
+          queryClient.setQueryData(
+            ["friend"],
+            (prev: { friends: Friend[] }) => {
+              if (!prev) return prev;
+              const updatedFriends = [...prev.friends];
+              const index = updatedFriends.findIndex(
+                (friend) => friend.id === target.id
+              );
+              if (index !== -1) {
+                updatedFriends[index] = {
+                  ...updatedFriends[index],
+                  unreadMessageCount: 0,
+                };
+              }
+              return { friends: updatedFriends };
+            }
+          );
+          markAsRead(target.friendshipId);
+        }
+      }
     }
   }, [id, data, setSelected]);
 

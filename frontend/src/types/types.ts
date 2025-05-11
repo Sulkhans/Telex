@@ -36,6 +36,7 @@ export type Friend = {
 export type Message = {
   id: string;
   content: string;
+  friendshipId: string;
   senderId: string;
   read: boolean;
   createdAt: Date;

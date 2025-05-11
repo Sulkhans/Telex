@@ -1,4 +1,5 @@
 import prisma from "../db/prisma.js";
+import { io, onlineUsers } from "../socket/socket.js";
 
 const sendFriendRequest = async (req, res) => {
   try {
@@ -24,6 +25,10 @@ const sendFriendRequest = async (req, res) => {
     await prisma.friendship.create({
       data: { senderId: req.user.id, receiverId: receiver.id },
     });
+    const socketId = onlineUsers.get(receiver.id);
+    if (socketId) {
+      io.to(socketId).emit("friend:request");
+    }
     res.status(200).json({ message: "Friend request was sent" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -131,7 +136,12 @@ const acceptFriendRequest = async (req, res) => {
     const friendship = await prisma.friendship.findUnique({ where: { id } });
     if (!friendship || friendship.receiverId !== req.user.id)
       return res.status(404).json({ message: "Friend request is invalid" });
+
     await prisma.friendship.update({ where: { id }, data: { status: true } });
+    const socketId = onlineUsers.get(friendship.senderId);
+    if (socketId) {
+      io.to(socketId).emit("friend:request:respond");
+    }
     res.status(200).json({ message: "Friend request was accepted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -150,6 +160,14 @@ const deleteFriend = async (req, res) => {
       return res.status(404).json({ message: "Friend request was not found" });
 
     await prisma.friendship.delete({ where: { id } });
+    const target =
+      user.id === friendship.receiverId
+        ? friendship.senderId
+        : friendship.receiverId;
+    const socketId = onlineUsers.get(target);
+    if (socketId) {
+      io.to(socketId).emit("friend:request:respond");
+    }
     res.status(200).json({ message: "Deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

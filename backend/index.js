@@ -11,7 +11,7 @@ import channelMessageRoutes from "./routes/channelMessageRouter.js";
 
 dotenv.config();
 
-const app = express();
+import { app, server } from "./socket/socket.js";
 const PORT = process.env.PORT;
 
 app.use(express.json());
@@ -25,4 +25,4 @@ app.use("/api/message", messageRoutes);
 app.use("/api/channel", channelRoutes);
 app.use("/api/channel-message", channelMessageRoutes);
 
-app.listen(PORT, () => console.log(`Running on port: ${PORT}`));
+server.listen(PORT, () => console.log(`Running on port: ${PORT}`));

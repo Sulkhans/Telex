@@ -40,6 +40,11 @@ export const sendMessage = async ({
   return res.data;
 };
 
+export const markAsRead = async (friendshipId: string) => {
+  const res = await api.put("/", { friendshipId });
+  return res.data;
+};
+
 export const editMessage = async ({
   id,
   content,

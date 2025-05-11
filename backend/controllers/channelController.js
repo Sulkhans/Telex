@@ -1,5 +1,6 @@
 import prisma from "../db/prisma.js";
 import crypto from "crypto";
+import { notifyChannelMembers } from "../utils/notifyChannelMembers.js";
 
 const createChannel = async (req, res) => {
   try {
@@ -65,7 +66,6 @@ const updateChannel = async (req, res) => {
     const requester = await prisma.channelMember.findFirst({
       where: { channelId: id, userId: req.user.id },
     });
-    console.log(requester);
     if (!requester || !requester.isAdmin)
       return res.status(400).json({ message: "Bad request" });
 
@@ -76,6 +76,7 @@ const updateChannel = async (req, res) => {
       where: { id },
       data: { name },
     });
+    await notifyChannelMembers(id, "channel:update", req.user.id);
     res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -95,7 +96,6 @@ const deleteChannel = async (req, res) => {
 
     await prisma.channelMessage.deleteMany({ where: { channelId: id } });
     await prisma.channelMember.deleteMany({ where: { channelId: id } });
-    await prisma.channel.delete({ where: { id } });
     res.status(200).json({ message: "Channel was deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -149,6 +149,12 @@ const joinChannel = async (req, res) => {
         userId: req.user.id,
       },
     });
+    await notifyChannelMembers(
+      invite.channelId,
+      "channel:member:update",
+      req.user.id,
+      { channelId: invite.channelId }
+    );
     res.status(200).json({ channelId: invite.channelId });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -166,6 +172,9 @@ const leaveChannel = async (req, res) => {
 
     await prisma.channelMember.delete({
       where: { id: membership.id },
+    });
+    await notifyChannelMembers(id, "channel:member:update", req.user.id, {
+      channelId: id,
     });
     res.status(200).json({ message: "Left channel successfully" });
   } catch (error) {
@@ -237,6 +246,9 @@ const removeMember = async (req, res) => {
     });
     if (!member) return res.status(404).json({ message: "Member not found" });
 
+    await notifyChannelMembers(id, "channel:member:update", req.user.id, {
+      channelId: id,
+    });
     await prisma.channelMember.delete({ where: { id: member.id } });
     res.status(200).json({ message: "Member was removed from the channel" });
   } catch (error) {

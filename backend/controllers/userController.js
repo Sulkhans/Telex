@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import sendEmail from "../utils/sendEmail.js";
 import generateToken from "../utils/generateToken.js";
+import { io, onlineUsers } from "../socket/socket.js";
 
 const createUser = async (req, res) => {
   try {
@@ -130,6 +131,14 @@ const loginUser = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { id, username, fullName, image, status } = req.user;
+    const session = onlineUsers.get(id);
+    if (!session) {
+      const user = await prisma.user.update({
+        where: { id },
+        data: { status: "online" },
+      });
+      return res.status(200).json(user);
+    }
     res.status(200).json({ id, username, fullName, image, status });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -143,6 +152,7 @@ const updateStatus = async (req, res) => {
       where: { id: req.user.id },
       data: { status: status },
     });
+    io.emit("user:status", { userId: req.user.id, status });
     res.json({ message: `User status updated to ${status}` });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -151,6 +161,13 @@ const updateStatus = async (req, res) => {
 
 const logoutUser = async (req, res) => {
   try {
+    const { id } = req.user;
+    await prisma.user.update({
+      where: { id },
+      data: { status: "offline" },
+    });
+    onlineUsers.delete(id);
+    io.emit("user:status", { userId: id, status: "offline" });
     res.cookie("jwt", "", { httpOnly: false, expires: new Date(0) });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
