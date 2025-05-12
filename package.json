@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "backend": "nodemon backend/index.js",
-    "frontend": "cd frontend && npm run dev"
+    "frontend": "cd frontend && npm run dev",
+    "build": "npm install && prisma generate --schema=./backend/prisma/schema.prisma && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "node backend/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +21,6 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "prisma": "^6.4.1",

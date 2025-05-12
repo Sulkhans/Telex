@@ -2,7 +2,7 @@ import axios from "axios";
 import { Friend } from "../types/types";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/friend",
+  baseURL: "/api/friend",
   withCredentials: true,
 });
 

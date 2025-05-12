@@ -2,7 +2,7 @@ import axios from "axios";
 import { Message } from "../types/types";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/message",
+  baseURL: "/api/message",
   withCredentials: true,
 });
 

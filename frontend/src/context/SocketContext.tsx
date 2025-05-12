@@ -18,6 +18,9 @@ const SocketContext = createContext<SocketContextType>({
   isConnected: false,
 });
 
+const socketURL =
+  import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -25,7 +28,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (user && !socket) {
-      const socket = io("http://localhost:5000", {
+      const socket = io(socketURL, {
         withCredentials: true,
         query: { userId: user.id, status: user.status },
         reconnectionAttempts: 5,

@@ -2,7 +2,7 @@ import axios from "axios";
 import { LoginData, SignupData, Status, User } from "../types/types";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/user",
+  baseURL: "/api/user",
   withCredentials: true,
 });
 

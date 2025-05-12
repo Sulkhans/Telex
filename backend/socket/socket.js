@@ -18,8 +18,6 @@ const onlineUsers = new Map();
 const offlineTimers = new Map();
 
 io.on("connection", (socket) => {
-  console.log("New connection established:", socket.id);
-
   const userId = socket.handshake.query.userId;
   if (userId) {
     const timer = offlineTimers.get(userId);

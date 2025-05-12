@@ -2,7 +2,7 @@ import axios from "axios";
 import { Channel, ChannelMember } from "../types/types";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/channel",
+  baseURL: "/api/channel",
   withCredentials: true,
 });
 
