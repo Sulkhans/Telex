@@ -61,7 +61,7 @@ const Friends = () => {
 
   return (
     <>
-      <div className="overflow-y-auto space-y-1">
+      <div className="overflow-y-auto scroll-hide space-y-1">
         {data
           ? data.friends.map((user) => (
               <Link
